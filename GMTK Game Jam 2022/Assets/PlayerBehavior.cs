@@ -45,7 +45,7 @@ public class PlayerBehavior : MonoBehaviour
     {
         if (GM.Move(index, _moveDir))
         {
-            transform.position = transform.position + new Vector3(_moveDir.x, _moveDir.y, 0);
+            transform.position = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
             index += _moveDir;
         }
     }
