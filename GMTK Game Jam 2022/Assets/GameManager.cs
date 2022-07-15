@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
     {
         curPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<PlayerBehavior>();
         curPlayer.Init(this);
-
     }
 
     public bool Move(Vector2Int _curIndex, Vector2Int _dir)
@@ -74,7 +73,7 @@ public class GameManager : MonoBehaviour
         
         else if (curPlayer.Index == _index)
         {
-            
+            //curPlayer.health
         }
     }
 
@@ -88,7 +87,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    int GetBoardCellState(Vector2Int _index)
+    public int GetBoardCellState(Vector2Int _index)
     {
         if ((_index.x < board.GetLength(0) && _index.y < board.GetLength(1)) && (_index.y >= 0 && _index.x >= 0))
         {
@@ -98,7 +97,7 @@ public class GameManager : MonoBehaviour
         return 99;
     }
 
-    void SetBoardCellState(Vector2Int _index, int _state)
+    public void SetBoardCellState(Vector2Int _index, int _state)
     {
         if ((_index.x < board.GetLength(0) && _index.y < board.GetLength(1)) && (_index.y >= 0 && _index.x >= 0))
         {

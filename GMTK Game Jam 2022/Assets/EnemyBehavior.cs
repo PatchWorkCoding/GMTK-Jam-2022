@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class EnemyBehavior : MonoBehaviour
 {
+    GameManager GM = null;
+
     [SerializeField]
     int health = 0;
 
     // Start is called before the first frame update
-    void Start()
+    void Init(GameManager _GM)
     {
-        
+        GM = _GM;
     }
 
     // Update is called once per frame
@@ -34,6 +36,6 @@ public class EnemyBehavior : MonoBehaviour
 
     public void Die() 
     { 
-    
+        
     }
 }

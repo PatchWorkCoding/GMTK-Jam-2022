@@ -7,7 +7,7 @@ public class PlayerBehavior : MonoBehaviour
     GameManager GM;
 
     Vector2Int index = Vector2Int.zero;
-    int health = 0;
+    
 
     public void Init(GameManager _GM)
     {
