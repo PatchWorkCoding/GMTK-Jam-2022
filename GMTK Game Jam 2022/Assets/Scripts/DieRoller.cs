@@ -6,7 +6,7 @@ public class DieRoller : MonoBehaviour
 {
     public void RollDie(Vector3 _rotation)
     {
-        transform.GetChild(0).Rotate(_rotation);
+        transform.GetChild(0).Rotate(_rotation, Space.World);
     }
 
     public int DieFace()

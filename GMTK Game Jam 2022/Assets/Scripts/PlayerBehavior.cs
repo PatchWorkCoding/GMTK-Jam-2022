@@ -12,6 +12,10 @@ public class PlayerBehavior : MonoBehaviour
     GameObject arrowPrefab = null, dieTablePrefab = null;
     [SerializeField]
     int movesPerTurn = 2;
+    [SerializeField]
+    int health = 6;
+    [SerializeField]
+    UIManager uiManager;
 
     GameObject curArrowParent = null;
     GameManager GM;
@@ -26,6 +30,9 @@ public class PlayerBehavior : MonoBehaviour
     public void Init(GameManager _GM, Vector2Int _index)
     {
         GM = _GM;
+        uiManager = GM.UIManager;
+        uiManager.UpdateHealth(5);
+        uiManager.UpdateMoveDie(5);
         index = _index;
         canAct = false;
         roller = Instantiate(dieTablePrefab).GetComponent<DieRoller>();
@@ -124,7 +131,19 @@ public class PlayerBehavior : MonoBehaviour
         {
             transform.position = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
             index += _moveDir;
+            uiManager.UpdateMoveDie(roller.DieFace() - 1);
             LayoutMoveArrows();
+        }
+    }
+
+    public void TakeDamage(int _damage)
+    {
+        health -= _damage;
+        uiManager.UpdateHealth(Mathf.Clamp(health - 1, 0, 5));
+
+        if (health == 0)
+        {
+            Debug.Log("Dead");
         }
     }
 

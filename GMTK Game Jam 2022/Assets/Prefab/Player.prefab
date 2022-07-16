@@ -117,6 +117,8 @@ MonoBehaviour:
   arrowPrefab: {fileID: 7069756548365312125, guid: 1b3d38a80d806ce488b0cf883ec08310, type: 3}
   dieTablePrefab: {fileID: 3288192413770818884, guid: 309501e59ce5c8e4c869f6764eab5c93, type: 3}
   movesPerTurn: 2
+  health: 6
+  uiManager: {fileID: 0}
 --- !u!1 &7898333618032862444
 GameObject:
   m_ObjectHideFlags: 0

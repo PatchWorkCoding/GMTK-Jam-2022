@@ -109,7 +109,9 @@ public class GameManager : MonoBehaviour
     {
         if (curPlayer.Index == _index)
         {
-            UI.updateHealth(_damage);
+            Player.TakeDamage(_damage);
+            //print("player Take Damage");
+            //UI.updateHealth(_damage);
         }
         else
         {
@@ -237,6 +239,11 @@ public class GameManager : MonoBehaviour
     public PlayerBehavior Player
     {
         get { return curPlayer; }
+    }
+
+    public UIManager UIManager
+    {
+        get { return UI; }
     }
 
     public void ProgressTurn()
