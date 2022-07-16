@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     string path = "DEFAULT";
 
+    [Header("UIStuff")]
+    [SerializeField]
+    UIManager UI = null;
     PlayerBehavior curPlayer = null;
 
     Dictionary<Vector2Int, EnemyBehavior> enemyDic = null;
@@ -104,8 +107,10 @@ public class GameManager : MonoBehaviour
         
         else if (curPlayer.Index == _index)
         {
-            
+            UI.updateHealth(_damage);
         }
+
+
     }
 
     public void RangedAttack(Vector2Int _dir, int _length, int _damage)
