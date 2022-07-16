@@ -109,9 +109,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bc991b8741cb3440b2c998c11b22151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 3
+  health: 8
   speed: 0
-  attack: 2
+  attack: 1
   target: {x: 0, y: 0}
-  maxMoves: 3
+  maxMoves: 1
   spawnIndex: 1
