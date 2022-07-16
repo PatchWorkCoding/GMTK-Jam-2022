@@ -25,8 +25,11 @@ public class GameManager : MonoBehaviour
     string path = "DEFAULT";
 
     PlayerBehavior curPlayer = null;
+    
+    List<EnemyBehavior> curEnemies = null;
 
-    Dictionary<Vector2Int, EnemyBehavior> enemyDic = null;
+    int turnOrderIndex = -1;
+    //Dictionary<Vector2Int, EnemyBehavior> enemyDic = null;
 
     int[,] board = null;
 
@@ -34,8 +37,11 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         board = new int[width, height];
+        curEnemies = new List<EnemyBehavior>();
+        turnOrderIndex = -2;
 
         PopulateBoard();
+        ProgressTurn();
     }
 
     // Update is called once per frame
@@ -70,8 +76,12 @@ public class GameManager : MonoBehaviour
 
                     else
                     {
-                        print("called");
-                        Instantiate(enemyPrefabs[_saveData.BoardStates[x][y] - 1], new Vector3(x, 0, y), Quaternion.identity);
+                        EnemyBehavior _enemy = Instantiate(enemyPrefabs[_saveData.BoardStates[x][y] - 1], new Vector3(x, 0, y), 
+                            Quaternion.identity).GetComponent<EnemyBehavior>();
+
+                        _enemy.Init(this, new Vector2Int(x, y));
+
+                        curEnemies.Add(_enemy);
                     }
                 }
                 
@@ -94,17 +104,22 @@ public class GameManager : MonoBehaviour
 
     public void Attack(Vector2Int _index, int _damage)
     {
-        if (enemyDic.ContainsKey(_index))
-        {
-            int _state = enemyDic[_index].Health - _damage;
-
-            enemyDic[_index].Health -= _damage;
-            SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
-        }
-        
-        else if (curPlayer.Index == _index)
+        if (curPlayer.Index == _index)
         {
             
+        }
+        else
+        {
+            for (int i = 0; i < curEnemies.Count; i++)
+            {
+                if (curEnemies[i].Index == _index)
+                {
+                    int _state = curEnemies[i].Health - _damage;
+                    curEnemies[i].Health -= _damage;
+
+                    SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
+                }
+            }
         }
     }
 
@@ -141,6 +156,12 @@ public class GameManager : MonoBehaviour
         int _j = board[_a.x, _a.y];
         board[_a.x, _a.y] = board[_b.x, _b.y];
         board[_b.x, _b.y] = _j;
+    }
+
+    public void RemoveEnemy(EnemyBehavior _enemy)
+    {
+        curEnemies.Remove(_enemy);
+        curEnemies.TrimExcess();
     }
 
     public void BakeBoard()
@@ -215,9 +236,24 @@ public class GameManager : MonoBehaviour
         get { return curPlayer; }
     }
 
-    public void nextTurn()
+    public void ProgressTurn()
     {
+        turnOrderIndex++;
 
+        if (turnOrderIndex >= curEnemies.Count)
+        {
+            turnOrderIndex = -1;
+        }
+
+        if (turnOrderIndex == -1)
+        {
+            Player.StartTurn();
+        }
+
+        else if (turnOrderIndex < curEnemies.Count)
+        {
+            curEnemies[turnOrderIndex].Turn();
+        }
     }
 }
 

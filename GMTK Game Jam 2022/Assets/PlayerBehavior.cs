@@ -9,75 +9,113 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField]
     LayerMask moveButtonLayer;
     [SerializeField]
-    GameObject arrowPrefab = null;
+    GameObject arrowPrefab = null, dieTablePrefab = null;
+    [SerializeField]
+    int movesPerTurn = 2;
 
     GameObject curArrowParent = null;
     GameManager GM;
+    DieRoller roller = null;
 
     Vector2Int index = Vector2Int.zero;
     
+    int moveCount = 0;
+
+    bool canAct = false;
 
     public void Init(GameManager _GM, Vector2Int _index)
     {
         GM = _GM;
         index = _index;
-        LayoutMoveArrows();
+        canAct = false;
+        roller = Instantiate(dieTablePrefab).GetComponent<DieRoller>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (canAct)
         {
-            Ray _ray = myCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit _hit;
-
-            Vector2Int _dir = Vector2Int.zero;
-            if (Physics.Raycast(_ray, out _hit, moveButtonLayer))
+            if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                switch (_hit.transform.name[0])
+                Ray _ray = myCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit _hit;
+
+                Vector2Int _dir = Vector2Int.zero;
+                if (Physics.Raycast(_ray, out _hit, moveButtonLayer))
                 {
-                    case 'w':
-                        _dir = new Vector2Int(0, 1);
-                        break;
+                    switch (_hit.transform.name[0])
+                    {
+                        case 'w':
+                            _dir = new Vector2Int(0, 1);
+                            roller.RollDie(new Vector3(90, 0, 0));
+                            break;
 
-                    case 's':
-                        _dir = new Vector2Int(0, -1);
-                        break;
+                        case 's':
+                            _dir = new Vector2Int(0, -1);
+                            roller.RollDie(new Vector3(-90, 0, 0));
+                            break;
 
-                    case 'a':
-                        _dir = new Vector2Int(-1, 0);
-                        break;
+                        case 'a':
+                            _dir = new Vector2Int(-1, 0);
+                            roller.RollDie(new Vector3(0, 0, 90));
+                            break;
 
-                    case 'd':
-                        _dir = new Vector2Int(1, 0);
-                        break;
+                        case 'd':
+                            _dir = new Vector2Int(1, 0);
+                            roller.RollDie(new Vector3(0, 0, -90));
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
+
+                    if (_dir != Vector2Int.zero)
+                    {
+                        if (_hit.transform.name[1] == 'm')
+                        {
+                            Move(_dir);
+                            moveCount++;
+                        }
+                        else if (_hit.transform.name[1] == 'a')
+                        {
+                            Attack(_dir);
+                            moveCount++;
+                        }
+                    }
                 }
 
-                if (_dir != Vector2Int.zero)
+                if (moveCount >= movesPerTurn)
                 {
-                    if (_hit.transform.name[1] == 'm')
+                    canAct = false;
+                    if (curArrowParent != null)
                     {
-                        Move(_dir);
+                        Destroy(curArrowParent);
                     }
-                    else if(_hit.transform.name[1] == 'a')
-                    {
-
-                    }
+                    GM.ProgressTurn();
                 }
             }
-
-            
         }
         
+        
+    }
+
+    public void StartTurn()
+    {
+        canAct = true;
+        moveCount = 0;
+        LayoutMoveArrows();
     }
 
     public Vector2Int Index
     {
         get { return index; }
+    }
+
+    void Attack(Vector2Int _dir)
+    {
+        GM.Attack(index + _dir, roller.DieFace());
+        LayoutMoveArrows();
     }
 
     void Move(Vector2Int _moveDir)
@@ -121,7 +159,7 @@ public class PlayerBehavior : MonoBehaviour
 
                 _curArrow.transform.parent = curArrowParent.transform;
             }
-            else if(_curCellState > 0)
+            else if(_curCellState > 0 && _curCellState < 99)
             {
                 GameObject _curArrow = Instantiate(arrowPrefab, new Vector3((index + _dirs[i]).x, 1, (index + _dirs[i]).y),
                     Quaternion.identity);
