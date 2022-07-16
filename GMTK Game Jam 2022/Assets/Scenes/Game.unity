@@ -267,7 +267,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 9626e96b6573a6844bae030a99eb92ed, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1948,9 +1948,13 @@ MonoBehaviour:
   width: 10
   height: 10
   playerPrefab: {fileID: 4472243090419033563, guid: 76cc8e87fdf89a344987f3cdca3d1040, type: 3}
+  firePrefab: {fileID: 7191657872678874734, guid: eb070eb9e7a592f4a8dfd7c3c3a897b7, type: 3}
   enemyPrefabs:
   - {fileID: 7801184552851306434, guid: 74987dfe8d97bc94da3368412c69485e, type: 3}
   - {fileID: 2544241486669258494, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+  - {fileID: 6583373373936970894, guid: 92e9de5f484d68f49b0e4dbe16b142e0, type: 3}
+  - {fileID: 6035371845110433769, guid: fc75664558c4422499d61d73368064a8, type: 3}
+  - {fileID: 6367332334529942174, guid: aee1002b233e1514eac33ac9ca90bcfb, type: 3}
   path: Bab
   UI: {fileID: 3372605870030910525}
 --- !u!4 &1021612801
@@ -1967,13 +1971,70 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1214051122
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258482, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2544241486669258494, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
+      propertyPath: m_Name
+      value: Knight Enemy
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: be7b173fb4d7e0346964129d9b0458c9, type: 3}
 --- !u!43 &1962402965
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh27598
+  m_Name: pb_Mesh24666
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -2212,7 +2273,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d05c8d8ec1f264948955a4d4b8095877, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 05e75e9e52e812e4f904f6cbcf11c42e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

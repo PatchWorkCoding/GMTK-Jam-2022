@@ -64,26 +64,20 @@ public class PlayerBehavior : MonoBehaviour
                     {
                         case 'w':
                             _dir = new Vector2Int(0, 1);
-                            _rollRot = (new Vector3(90, 0, 0));
-                            spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+                           
                             break;
 
                         case 's':
                             _dir = new Vector2Int(0, -1);
-                            _rollRot = (new Vector3(-90, 0, 0));
-                            spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+                            
                             break;
 
                         case 'a':
                             _dir = new Vector2Int(-1, 0);
-                            _rollRot = (new Vector3(0, 0, 90));
-                            spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
                             break;
 
                         case 'd':
                             _dir = new Vector2Int(1, 0);
-                            _rollRot = (new Vector3(0, 0, -90));
-                            spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
                             break;
 
                         default:
@@ -94,7 +88,7 @@ public class PlayerBehavior : MonoBehaviour
                     {
                         if (_hit.transform.name[1] == 'm')
                         {
-                            roller.RollDie(_rollRot);
+                            
                             StartCoroutine(Move(_dir));
                             moveCount++;
                         }
@@ -151,7 +145,7 @@ public class PlayerBehavior : MonoBehaviour
         }
     }
 
-    IEnumerator Move(Vector2Int _moveDir)
+    public IEnumerator Move(Vector2Int _moveDir)
     {
         if (GM.Move(index, _moveDir))
         {
@@ -159,6 +153,30 @@ public class PlayerBehavior : MonoBehaviour
             {
                 Destroy(curArrowParent);
             }
+
+            Vector3 _rollRot = Vector3.zero;
+            if (_moveDir == new Vector2Int(0,1))
+            {
+                _rollRot = (new Vector3(90, 0, 0));
+                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else if (_moveDir == new Vector2Int(0, -1))
+            {
+                _rollRot = (new Vector3(-90, 0, 0));
+                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (_moveDir == new Vector2Int(-1, 0))
+            {
+                _rollRot = (new Vector3(0, 0, 90));
+                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else if(_moveDir == new Vector2Int(1,0))
+            {
+                _rollRot = (new Vector3(0, 0, -90));
+                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+
+            roller.RollDie(_rollRot);
 
             Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
             yield return new WaitForSeconds(0.1f);
@@ -175,20 +193,22 @@ public class PlayerBehavior : MonoBehaviour
 
             index += _moveDir;
             uiManager.UpdateMoveDie(roller.DieFace() - 1);
-            
 
-            if (moveCount >= movesPerTurn)
+            if (canAct)
             {
-                canAct = false;
-                if (curArrowParent != null)
+                if (moveCount >= movesPerTurn)
                 {
-                    Destroy(curArrowParent);
+                    canAct = false;
+                    if (curArrowParent != null)
+                    {
+                        Destroy(curArrowParent);
+                    }
+                    GM.ProgressTurn();
                 }
-                GM.ProgressTurn();
-            }
-            else
-            {
-                LayoutMoveArrows();
+                else
+                {
+                    LayoutMoveArrows();
+                }
             }
         }
     }
@@ -200,7 +220,10 @@ public class PlayerBehavior : MonoBehaviour
 
         if (health == 0)
         {
-            Debug.Log("Dead");
+            GM.ResetGame();
+            Destroy(roller.gameObject);
+            Destroy(gameObject);
+            //Debug.Log("Dead");
         }
     }
 

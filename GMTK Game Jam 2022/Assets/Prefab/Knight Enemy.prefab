@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2544241486669258482}
   - component: {fileID: 1097570157467190084}
+  - component: {fileID: 7163591264191146513}
   m_Layer: 0
   m_Name: Knight Enemy
   m_TagString: Enemy
@@ -51,10 +52,23 @@ MonoBehaviour:
   maxMoves: 1
   spawnIndex: 1
   spriteRenderer: {fileID: 1389068848273386334}
-  defaultSprite: {fileID: 21300000, guid: 20a4f970cd42ef0448f5624325fe90c9, type: 3}
-  Walk1: {fileID: 21300000, guid: a690175bdd3ef434fbf045eede9dff16, type: 3}
-  Walk2: {fileID: 21300000, guid: a084f904a499c2b4c8d97f18affa6580, type: 3}
-  attackSprite: {fileID: 21300000, guid: a8bfaabd3a7e41143961eaf3ab77f796, type: 3}
+  defaultSprite: {fileID: 21300000, guid: 5a62da897784e724e9ce7bc295be8409, type: 3}
+  Walk1: {fileID: 21300000, guid: ee39e309f7dbff7449b646e72377e28b, type: 3}
+  Walk2: {fileID: 21300000, guid: b05b300de1a10f844b9f409d4d72cd3e, type: 3}
+  attackSprite: {fileID: 21300000, guid: d7f42aeb8a184234bb75b1cd0eaa07b3, type: 3}
+--- !u!65 &7163591264191146513
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2544241486669258494}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8396233426812000990
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,12 +141,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 20a4f970cd42ef0448f5624325fe90c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5a62da897784e724e9ce7bc295be8409, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 2.56}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

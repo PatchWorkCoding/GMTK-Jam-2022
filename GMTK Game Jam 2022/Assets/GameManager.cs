@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject playerPrefab = null;
     [SerializeField]
+    GameObject firePrefab = null;
+    [SerializeField]
     List<GameObject> enemyPrefabs = null;
 
     [Header("Save Properties")]
@@ -30,6 +32,7 @@ public class GameManager : MonoBehaviour
     PlayerBehavior curPlayer = null;
     
     List<EnemyBehavior> curEnemies = null;
+    List<GameObject> fireSprites = null;
 
     int turnOrderIndex = -1;
     //Dictionary<Vector2Int, EnemyBehavior> enemyDic = null;
@@ -39,10 +42,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        board = new int[width, height];
-        curEnemies = new List<EnemyBehavior>();
-        turnOrderIndex = -2;
-
         PopulateBoard();
         ProgressTurn();
     }
@@ -55,6 +54,11 @@ public class GameManager : MonoBehaviour
 
     public void PopulateBoard()
     {
+        board = new int[width, height];
+        curEnemies = new List<EnemyBehavior>();
+        fireSprites = new List<GameObject>();
+        turnOrderIndex = -2;
+
         string _loadPath = Application.dataPath + "/" + path + ".level";
 
         BinaryFormatter _formatter = new BinaryFormatter();
@@ -101,6 +105,11 @@ public class GameManager : MonoBehaviour
             SwapStates(_curIndex, _curIndex + _dir);
             return true;
         }
+        else if (_boardCellState == 15)
+        {
+            SwapStates(_curIndex, _curIndex + _dir);
+            return true;
+        }
 
         return false;
     } 
@@ -129,16 +138,16 @@ public class GameManager : MonoBehaviour
 
     public void RangedAttack(Vector2Int _index, Vector2Int _dir, int _length, int _damage)
     {
-        Vector2Int _curIndex = _index + _dir;
+        Vector2Int _curIndex = _index;
         for (int i = 0; i < _length; i++)
         {
+            _curIndex += _dir;
             if (GetBoardCellState(_curIndex) != 99)
             {
                 if (curPlayer.Index == _curIndex)
                 {
                     Player.TakeDamage(_damage);
                     break;
-
                 }
 
                 else
@@ -165,14 +174,13 @@ public class GameManager : MonoBehaviour
     }
 
     public void SpellAttack(Vector2Int _index, Vector2Int _size, int _damage)
-    {
-        
+    {   
         for (int x = -Mathf.FloorToInt(_size.x / 2); x < _size.x; x++)
         {
             for (int y = -Mathf.FloorToInt(_size.x / 2); y < _size.y; y++)
             {
                 Vector2Int _curIndex = new Vector2Int(_index.x + x, _index.y + y);
-                if (GetBoardCellState(_curIndex) != 99 && GetBoardCellState(_curIndex) > 0)
+                if (GetBoardCellState(_curIndex) != 99 && GetBoardCellState(_curIndex) >= 0)
                 {
                     SetBoardCellState(_index, 15);
                 }
@@ -194,15 +202,42 @@ public class GameManager : MonoBehaviour
     {
         if ((_index.x < board.GetLength(0) && _index.y < board.GetLength(1)) && (_index.y >= 0 && _index.x >= 0))
         {
+            if (_state == 15)
+            {
+                print("called");
+                fireSprites.Add(Instantiate(firePrefab, new Vector3(_index.x, 0, _index.y), firePrefab.transform.rotation));
+            }
             board[_index.x, _index.y] = _state;
         }
     }
 
     void SwapStates(Vector2Int _a, Vector2Int _b)
     {
+
         int _j = board[_a.x, _a.y];
-        board[_a.x, _a.y] = board[_b.x, _b.y];
+        if (board[_a.x, _a.y] == 15)
+        {
+            board[_a.x, _a.y] = 0;
+        }
+        else
+        {
+            board[_a.x, _a.y] = board[_b.x, _b.y];
+        }
         board[_b.x, _b.y] = _j;
+    }
+
+
+    public void ResetGame()
+    {
+        for (int i = 0; i < curEnemies.Count; i++)
+        {
+            Destroy(curEnemies[i].gameObject);
+        }
+        curEnemies.Clear();
+        curEnemies.TrimExcess();
+
+        PopulateBoard();
+        ProgressTurn();
     }
 
     public void RemoveEnemy(EnemyBehavior _enemy)
@@ -233,7 +268,7 @@ public class GameManager : MonoBehaviour
 
                         case "Enemy":
                             _boardStates[x][y] = _hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1;
-                            print(_hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1);
+                            //print(_hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1);
                             DestroyImmediate(_hit.transform.gameObject);
                             break;
 
@@ -242,7 +277,7 @@ public class GameManager : MonoBehaviour
                             break;
 
                         default:
-                            Debug.Log("called");
+                            //Debug.Log("called");
                             _boardStates[x][y] = 0;
                             break;
                     }
@@ -296,6 +331,7 @@ public class GameManager : MonoBehaviour
         if (turnOrderIndex >= curEnemies.Count)
         {
             turnOrderIndex = -1;
+            RemoveFire();
         }
 
         if (turnOrderIndex == -1)
@@ -306,6 +342,29 @@ public class GameManager : MonoBehaviour
         else if (turnOrderIndex < curEnemies.Count)
         {
             curEnemies[turnOrderIndex].Turn();
+        }
+    }
+
+    void RemoveFire() 
+    {
+        if (fireSprites.Count > 0)
+        {
+            for (int i = 0; i < fireSprites.Count; i++)
+            {
+                Destroy(fireSprites[i]);
+            }
+            fireSprites.TrimExcess();
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (board[x, y] == 15)
+                {
+                    board[x, y] = 0;
+                }
+            }
         }
     }
 }
@@ -319,6 +378,11 @@ public class GameManagerEditor : Editor
         if (GUILayout.Button("Bake Map"))
         {
             (target as GameManager).BakeBoard();
+        }
+
+        if (GUILayout.Button("Load Map"))
+        {
+            (target as GameManager).PopulateBoard();
         }
     }
 }
