@@ -14,17 +14,6 @@ public class UIManager : MonoBehaviour
     Sprite curHealth = null;
     int healthValue = 6;
 
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public IEnumerator updateFace(int _curFace)
     {
         yield return new WaitForSeconds(.2f);
