@@ -18,8 +18,12 @@ public class EnemyBehavior : MonoBehaviour
     protected Vector2Int target = new Vector2Int(0, 0);
     [SerializeField]
     int range = 0;
+
+    [SerializeField]
+    int spawnIndex = 0;
+
     // Start is called before the first frame update
-    void Init(GameManager _GM)
+    void Init(GameManager _GM, int _spawnIndex)
     {
         GM = _GM;
         this.gameObject.tag = "Enemy";
@@ -53,14 +57,20 @@ public class EnemyBehavior : MonoBehaviour
     public int Health
     {
         get { return health; }
-        set
-        {
+
+        set 
+        { 
             health = value;
             if (value == 0)
             {
                 Die();
             }
         }
+    }
+
+    public int SpawnIndex
+    {
+        get { return spawnIndex; }
     }
 
     public void Die()

@@ -1,5 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,9 +13,16 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     int height = 10;
 
+
     [Header("Piece Prefabs")]
     [SerializeField]
     GameObject playerPrefab = null;
+    [SerializeField]
+    List<GameObject> enemyPrefabs = null;
+
+    [Header("Save Properties")]
+    [SerializeField]
+    string path = "DEFAULT";
 
     PlayerBehavior curPlayer = null;
 
@@ -25,14 +35,6 @@ public class GameManager : MonoBehaviour
     {
         board = new int[width, height];
 
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                board[x, y] = 0;
-            }
-        }
-
         PopulateBoard();
     }
 
@@ -44,8 +46,37 @@ public class GameManager : MonoBehaviour
 
     public void PopulateBoard()
     {
-        curPlayer = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<PlayerBehavior>();
-        curPlayer.Init(this);
+        string _loadPath = Application.dataPath + "/" + path + ".level";
+
+        BinaryFormatter _formatter = new BinaryFormatter();
+        FileStream _stream = new FileStream(_loadPath, FileMode.Open);
+
+        BoardSave _saveData = _formatter.Deserialize(_stream) as BoardSave;
+
+        _stream.Close();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                board[x, y] = _saveData.BoardStates[x][y];
+                if (_saveData.BoardStates[x][y] > 0)
+                {
+                    if (_saveData.BoardStates[x][y] == 69)
+                    {
+                        curPlayer = Instantiate(playerPrefab, new Vector3(x, 0, y), Quaternion.identity).GetComponent<PlayerBehavior>();
+                        curPlayer.Init(this, new Vector2Int(x, y));
+                    }
+
+                    else
+                    {
+                        print("called");
+                        Instantiate(enemyPrefabs[_saveData.BoardStates[x][y] - 1], new Vector3(x, 0, y), Quaternion.identity);
+                    }
+                }
+                
+            }
+        }
     }
 
     public bool Move(Vector2Int _curIndex, Vector2Int _dir)
@@ -73,7 +104,7 @@ public class GameManager : MonoBehaviour
         
         else if (curPlayer.Index == _index)
         {
-            //curPlayer.health
+            
         }
     }
 
@@ -112,13 +143,109 @@ public class GameManager : MonoBehaviour
         board[_b.x, _b.y] = _j;
     }
 
+    public void BakeBoard()
+    {
+        int[][] _boardStates = new int[width][];
+        for (int x = 0; x < width; x++)
+        {
+            _boardStates[x] = new int[height];
+            for (int y = 0; y < height; y++)
+            {
+
+                
+                RaycastHit _hit;
+                if (Physics.Raycast(new Vector3(x, 100, y), Vector3.down, out _hit))
+                {
+                    switch (_hit.transform.tag)
+                    {
+                        case "Player":
+                            _boardStates[x][y] = 69;
+                            DestroyImmediate(_hit.transform.gameObject);
+                            break;
+
+                        case "Enemy":
+                            _boardStates[x][y] = _hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1;
+                            print(_hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1);
+                            DestroyImmediate(_hit.transform.gameObject);
+                            break;
+
+                        case "Immoveable":
+                            _boardStates[x][y] = -1;
+                            break;
+
+                        default:
+                            _boardStates[x][y] = 0;
+                            break;
+                    }
+                }
+
+                else
+                {
+                    _boardStates[x][y] = -1;
+                }
+            }
+        }
+
+        string _savePath = Application.dataPath + "/" + path + ".level";
+        BinaryFormatter _fromatter = new BinaryFormatter();
+        FileMode _fileMode = FileMode.Create;
+
+        FileStream _stream = new FileStream(_savePath, _fileMode);
+
+        _fromatter.Serialize(_stream, new BoardSave(_boardStates));
+
+        _stream.Close();
+    }
+
+    private void OnDrawGizmos()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Gizmos.DrawLine(new Vector3(x, 0, 0), new Vector3(x, 0, width));
+        }
+
+        for (int y = 0; y < height; y++)
+        {
+            Gizmos.DrawLine(new Vector3(0, 0, y), new Vector3(height, 0, y));
+        }
+    }
+
     public PlayerBehavior Player
-    { 
+    {
         get { return curPlayer; }
     }
 
     public void nextTurn()
     {
 
+    }
+}
+
+[CustomEditor(typeof(GameManager))]
+public class GameManagerEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        if (GUILayout.Button("Bake Map"))
+        {
+            (target as GameManager).BakeBoard();
+        }
+    }
+}
+
+[System.Serializable]
+public class BoardSave
+{
+    int[][] m_boardStates;
+
+    public BoardSave(int[][] _boardStates)
+    {
+        m_boardStates = _boardStates;
+    }
+
+    public int[][] BoardStates
+    {
+        get { return m_boardStates; }
     }
 }
