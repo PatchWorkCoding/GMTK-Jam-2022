@@ -22,22 +22,27 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField]
     int spawnIndex = 0;
 
+    Vector2Int index = Vector2Int.zero;
+
     // Start is called before the first frame update
-    void Init(GameManager _GM, int _spawnIndex)
+    public void Init(GameManager _GM, Vector2Int _index)
     {
         GM = _GM;
         this.gameObject.tag = "Enemy";
+
+        index = _index;
     }
 
-    private void Turn()
+    public void Turn()
     {
-        Movement();
-        Attack();
+        //Movement();
+        //Attack();
+        print("Did a turn");
         TurnOver();
     }
     private void TurnOver()
     {
-        GM.nextTurn();
+        GM.ProgressTurn();
     }
     protected virtual IEnumerator Attack()
     {
@@ -49,8 +54,6 @@ public class EnemyBehavior : MonoBehaviour
     }
     protected virtual IEnumerator Movement()
     {
-
-        //GM.enemydic(me).Index = ;
         yield return new WaitForSeconds(0.4f);
         StartCoroutine(Attack());
     }
@@ -61,7 +64,7 @@ public class EnemyBehavior : MonoBehaviour
         set 
         { 
             health = value;
-            if (value == 0)
+            if (health <= 0)
             {
                 Die();
             }
@@ -73,8 +76,14 @@ public class EnemyBehavior : MonoBehaviour
         get { return spawnIndex; }
     }
 
+    public Vector2Int Index
+    {
+        get { return index; }
+    }
+
     public void Die()
     {
-
+        GM.RemoveEnemy(this);
+        Destroy(gameObject);
     }
 }
