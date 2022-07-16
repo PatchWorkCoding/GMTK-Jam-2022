@@ -111,4 +111,14 @@ public class GameManager : MonoBehaviour
         board[_a.x, _a.y] = board[_b.x, _b.y];
         board[_b.x, _b.y] = _j;
     }
+
+    public PlayerBehavior Player
+    { 
+        get { return curPlayer; }
+    }
+
+    public void nextTurn()
+    {
+
+    }
 }
