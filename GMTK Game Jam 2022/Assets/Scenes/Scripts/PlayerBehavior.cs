@@ -16,6 +16,11 @@ public class PlayerBehavior : MonoBehaviour
     int health = 6;
     [SerializeField]
     UIManager uiManager;
+    [Header("Sprite Properties")]
+    [SerializeField]
+    SpriteRenderer spriteRenderer = null;
+    [SerializeField]
+    Sprite defaultSprite, Walk1, Walk2, attackSprite;
 
     GameObject curArrowParent = null;
     GameManager GM;
@@ -30,11 +35,14 @@ public class PlayerBehavior : MonoBehaviour
     public void Init(GameManager _GM, Vector2Int _index)
     {
         GM = _GM;
+
         uiManager = GM.UIManager;
         uiManager.UpdateHealth(5);
-        uiManager.UpdateMoveDie(5);
+        uiManager.UpdateMoveDie(0);
+
         index = _index;
         canAct = false;
+
         roller = Instantiate(dieTablePrefab).GetComponent<DieRoller>();
     }
 
@@ -49,28 +57,33 @@ public class PlayerBehavior : MonoBehaviour
                 RaycastHit _hit;
 
                 Vector2Int _dir = Vector2Int.zero;
+                Vector3 _rollRot = Vector3.zero;
                 if (Physics.Raycast(_ray, out _hit, moveButtonLayer))
                 {
                     switch (_hit.transform.name[0])
                     {
                         case 'w':
                             _dir = new Vector2Int(0, 1);
-                            roller.RollDie(new Vector3(90, 0, 0));
+                            _rollRot = (new Vector3(90, 0, 0));
+                            spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
                             break;
 
                         case 's':
                             _dir = new Vector2Int(0, -1);
-                            roller.RollDie(new Vector3(-90, 0, 0));
+                            _rollRot = (new Vector3(-90, 0, 0));
+                            spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
                             break;
 
                         case 'a':
                             _dir = new Vector2Int(-1, 0);
-                            roller.RollDie(new Vector3(0, 0, 90));
+                            _rollRot = (new Vector3(0, 0, 90));
+                            spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
                             break;
 
                         case 'd':
                             _dir = new Vector2Int(1, 0);
-                            roller.RollDie(new Vector3(0, 0, -90));
+                            _rollRot = (new Vector3(0, 0, -90));
+                            spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
                             break;
 
                         default:
@@ -81,25 +94,16 @@ public class PlayerBehavior : MonoBehaviour
                     {
                         if (_hit.transform.name[1] == 'm')
                         {
-                            Move(_dir);
+                            roller.RollDie(_rollRot);
+                            StartCoroutine(Move(_dir));
                             moveCount++;
                         }
                         else if (_hit.transform.name[1] == 'a')
                         {
-                            Attack(_dir);
+                            StartCoroutine(Attack(_dir));
                             moveCount++;
                         }
                     }
-                }
-
-                if (moveCount >= movesPerTurn)
-                {
-                    canAct = false;
-                    if (curArrowParent != null)
-                    {
-                        Destroy(curArrowParent);
-                    }
-                    GM.ProgressTurn();
                 }
             }
         }
@@ -119,20 +123,73 @@ public class PlayerBehavior : MonoBehaviour
         get { return index; }
     }
 
-    void Attack(Vector2Int _dir)
+    IEnumerator Attack(Vector2Int _dir)
     {
+        if (curArrowParent != null)
+        {
+            Destroy(curArrowParent);
+        }
+
+        spriteRenderer.sprite = attackSprite;
         GM.Attack(index + _dir, roller.DieFace());
-        LayoutMoveArrows();
+
+        yield return new WaitForSeconds(0.1f);
+        spriteRenderer.sprite = defaultSprite;
+
+        if (moveCount >= movesPerTurn)
+        {
+            canAct = false;
+            if (curArrowParent != null)
+            {
+                Destroy(curArrowParent);
+            }
+            GM.ProgressTurn();
+        }
+        else
+        {
+            LayoutMoveArrows();
+        }
     }
 
-    void Move(Vector2Int _moveDir)
+    IEnumerator Move(Vector2Int _moveDir)
     {
         if (GM.Move(index, _moveDir))
         {
-            transform.position = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
+            if (curArrowParent != null)
+            {
+                Destroy(curArrowParent);
+            }
+
+            Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.sprite = Walk1;
+            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
+
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.sprite = Walk2;
+            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
+
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.sprite = defaultSprite;
+            transform.position = _finalPos;
+
             index += _moveDir;
             uiManager.UpdateMoveDie(roller.DieFace() - 1);
-            LayoutMoveArrows();
+            
+
+            if (moveCount >= movesPerTurn)
+            {
+                canAct = false;
+                if (curArrowParent != null)
+                {
+                    Destroy(curArrowParent);
+                }
+                GM.ProgressTurn();
+            }
+            else
+            {
+                LayoutMoveArrows();
+            }
         }
     }
 
@@ -149,11 +206,6 @@ public class PlayerBehavior : MonoBehaviour
 
     public void LayoutMoveArrows()
     {
-        if (curArrowParent != null)
-        {
-            Destroy(curArrowParent);            
-        }
-
         curArrowParent = new GameObject();
         curArrowParent.name = "curArrows";
 

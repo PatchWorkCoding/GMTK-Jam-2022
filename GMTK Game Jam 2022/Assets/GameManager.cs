@@ -103,15 +103,14 @@ public class GameManager : MonoBehaviour
         }
 
         return false;
-    }
+    } 
 
     public void Attack(Vector2Int _index, int _damage)
     {
         if (curPlayer.Index == _index)
         {
             Player.TakeDamage(_damage);
-            //print("player Take Damage");
-            //UI.updateHealth(_damage);
+
         }
         else
         {
@@ -128,14 +127,57 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RangedAttack(Vector2Int _dir, int _length, int _damage)
+    public void RangedAttack(Vector2Int _index, Vector2Int _dir, int _length, int _damage)
     {
+        Vector2Int _curIndex = _index + _dir;
+        for (int i = 0; i < _length; i++)
+        {
+            if (GetBoardCellState(_curIndex) != 99)
+            {
+                if (curPlayer.Index == _curIndex)
+                {
+                    Player.TakeDamage(_damage);
+                    break;
 
+                }
+
+                else
+                {
+                    for (int n = 0; n < curEnemies.Count; n++)
+                    {
+                        if (curEnemies[n].Index == _curIndex)
+                        {
+                            int _state = curEnemies[n].Health - _damage;
+                            curEnemies[n].Health -= _damage;
+
+                            SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            else
+            {
+                break;
+            }
+        }
     }
 
-    public void SpellAttack(Vector2Int _size, int _damage)
+    public void SpellAttack(Vector2Int _index, Vector2Int _size, int _damage)
     {
-
+        
+        for (int x = -Mathf.FloorToInt(_size.x / 2); x < _size.x; x++)
+        {
+            for (int y = -Mathf.FloorToInt(_size.x / 2); y < _size.y; y++)
+            {
+                Vector2Int _curIndex = new Vector2Int(_index.x + x, _index.y + y);
+                if (GetBoardCellState(_curIndex) != 99 && GetBoardCellState(_curIndex) > 0)
+                {
+                    SetBoardCellState(_index, 15);
+                }
+            }
+        }
     }
 
     public int GetBoardCellState(Vector2Int _index)
@@ -200,6 +242,7 @@ public class GameManager : MonoBehaviour
                             break;
 
                         default:
+                            Debug.Log("called");
                             _boardStates[x][y] = 0;
                             break;
                     }
@@ -227,12 +270,12 @@ public class GameManager : MonoBehaviour
     {
         for (int x = 0; x < width; x++)
         {
-            Gizmos.DrawLine(new Vector3(x, 0, 0), new Vector3(x, 0, width));
+            Gizmos.DrawLine(new Vector3(x, 0, 0), new Vector3(x, 0, width - 1));
         }
 
         for (int y = 0; y < height; y++)
         {
-            Gizmos.DrawLine(new Vector3(0, 0, y), new Vector3(height, 0, y));
+            Gizmos.DrawLine(new Vector3(0, 0, y), new Vector3(height - 1, 0, y));
         }
     }
 

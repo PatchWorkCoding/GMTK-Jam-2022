@@ -59,19 +59,21 @@ public class EnemyBehavior : MonoBehaviour
         target = GM.Player.Index;
     }
 
+    /*
     protected virtual IEnumerator Movement()
     {
         yield return new WaitForSeconds(0.4f);
         StartCoroutine(Attack());
     }
-
+    */
+    /*
     protected virtual IEnumerator Attack()
     {
         GM.Attack(target, attack);
         yield return new WaitForSeconds(0.4f);
         TurnOver();
     }
-
+    */
     protected void TurnOver()
     {
         GM.ProgressTurn();
