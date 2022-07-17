@@ -742,9 +742,9 @@ RectTransform:
   m_Father: {fileID: 1407177892697676565}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -342.5, y: -242.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 57.5, y: 57.5}
   m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1407177892438308909
@@ -846,7 +846,7 @@ MonoBehaviour:
   - {fileID: 6583373373936970894, guid: 92e9de5f484d68f49b0e4dbe16b142e0, type: 3}
   - {fileID: 6035371845110433769, guid: fc75664558c4422499d61d73368064a8, type: 3}
   - {fileID: 6367332334529942174, guid: aee1002b233e1514eac33ac9ca90bcfb, type: 3}
-  path: dedee
+  path: Level6
   UI: {fileID: 1407177892697676561}
   beepSource: {fileID: 1286151904}
   attackSource: {fileID: 2111904492}
@@ -856,6 +856,7 @@ MonoBehaviour:
   hissSource: {fileID: 2625595371162879399}
   deathSprite1: {fileID: 21300000, guid: c04dd1100f05e6d4bab2bbcb60929cee, type: 3}
   deathSprite2: {fileID: 21300000, guid: 324d07ab3aaeef748af2a3369bd61db6, type: 3}
+  transitionScreen: {fileID: 0}
 --- !u!1 &1407177892697676560
 GameObject:
   m_ObjectHideFlags: 0

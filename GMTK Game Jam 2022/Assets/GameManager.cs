@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
         deathSource = null, enemyWalk = null, pewSource = null, hissSource = null;
     [SerializeField]
     public Sprite deathSprite1 = null, deathSprite2 = null;
+    [SerializeField]
+    GameObject transitionScreen = null;
 
     List<EnemyBehavior> curEnemies = null;
     List<GameObject> fireSprites = null;
@@ -62,8 +64,8 @@ public class GameManager : MonoBehaviour
         {
             GM = this;
             DontDestroyOnLoad(gameObject);
-            //curLevelIndex = 1;
-            //path = "Level" + (curLevelIndex + 1);
+            curLevelIndex = 1;
+            path = "Level" + (curLevelIndex + 1);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             //PopulateBoard(path);
@@ -441,9 +443,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void LoadNextLevel()
+    IEnumerator LoadNextLevel()
     {
-        print("called");
+        //print("called");
+        transitionScreen.SetActive(true);
+        yield return new WaitForSeconds(1);
+        transitionScreen.SetActive(false);
+
         path = "Level" + (curLevelIndex + 1);
         SceneManager.LoadScene("Level" + (curLevelIndex + 1), LoadSceneMode.Single);
     }
