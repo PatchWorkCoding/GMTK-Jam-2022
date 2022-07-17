@@ -9,7 +9,7 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField]
     LayerMask moveButtonLayer;
     [SerializeField]
-    GameObject arrowPrefab = null, dieTablePrefab = null;
+    GameObject arrowPrefab = null, attackPrefab = null, dieTablePrefab = null;
     [SerializeField]
     int movesPerTurn = 2;
     [SerializeField]
@@ -66,7 +66,7 @@ public class PlayerBehavior : MonoBehaviour
 
                 Vector2Int _dir = Vector2Int.zero;
                 Vector3 _rollRot = Vector3.zero;
-                if (Physics.Raycast(_ray, out _hit, moveButtonLayer))
+                if (Physics.Raycast(_ray, out _hit, 1000, moveButtonLayer))
                 {
                     switch (_hit.transform.name[0])
                     {
@@ -313,8 +313,19 @@ public class PlayerBehavior : MonoBehaviour
             }
             else if(_curCellState > 0 && _curCellState < 99)
             {
-                GameObject _curArrow = Instantiate(arrowPrefab, new Vector3((index + _dirs[i]).x, 1, (index + _dirs[i]).y),
+                GameObject _curArrow = Instantiate(attackPrefab, new Vector3((index + _dirs[i]).x, 0, (index + _dirs[i]).y),
                     Quaternion.identity);
+
+                if (cursedFaces[roller.DieFace() - 1] <= 0)
+                {
+                    
+                }
+                else
+                {
+                    _curArrow.transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+                    _curArrow.name = "no";
+                }
+
                 _curArrow.name = _names[i] + "a";
 
                 _curArrow.transform.parent = curArrowParent.transform;
