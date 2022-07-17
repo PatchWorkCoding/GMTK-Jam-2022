@@ -142,6 +142,7 @@ public class PlayerBehavior : MonoBehaviour
         if (moveCount >= movesPerTurn)
         {
             EndTurn();
+            
         }
         else
         {
@@ -184,7 +185,9 @@ public class PlayerBehavior : MonoBehaviour
                     Destroy(curArrowParent);
                 }
 
+                uiManager.UpdateMoveDie(6);
                 Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
+
                 yield return new WaitForSeconds(0.1f);
                 spriteRenderer.sprite = Walk1;
                 transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
@@ -197,8 +200,12 @@ public class PlayerBehavior : MonoBehaviour
                 spriteRenderer.sprite = defaultSprite;
                 transform.position = _finalPos;
 
-                index += _moveDir;
                 uiManager.UpdateMoveDie(roller.DieFace() - 1);
+
+                index += _moveDir;
+                
+
+                unavalibeDir = -_moveDir;
 
                 if (canAct)
                 {
@@ -235,6 +242,8 @@ public class PlayerBehavior : MonoBehaviour
         {
             Destroy(curArrowParent);
         }
+
+        unavalibeDir = new Vector2Int(0,0);
         GM.ProgressTurn();
     }
 
@@ -295,7 +304,7 @@ public class PlayerBehavior : MonoBehaviour
             roller.RollDie(_rollRot);
 
             int _curCellState = GM.GetBoardCellState(index + _dirs[i]);
-            if (_curCellState == 0)
+            if (_curCellState == 0 && _dirs[i] != unavalibeDir)
             {
                 GameObject _curArrow = Instantiate(arrowPrefab, new Vector3((index + _dirs[i]).x, 0, (index + _dirs[i]).y),
                     Quaternion.identity);
