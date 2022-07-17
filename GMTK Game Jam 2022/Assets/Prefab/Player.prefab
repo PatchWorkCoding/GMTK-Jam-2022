@@ -148,8 +148,8 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 61f7829b15219d94ab34ca20ad2007ac, type: 3}
   spriteRenderer: {fileID: 346414540584321497}
   defaultSprite: {fileID: 21300000, guid: ab192fbba403d2d40b5d62eaebe18641, type: 3}
-  Walk1: {fileID: 21300000, guid: 5a2dbb621cce1ab4b98317fc98c07302, type: 3}
-  Walk2: {fileID: 21300000, guid: ab192fbba403d2d40b5d62eaebe18641, type: 3}
+  Walk1: {fileID: 21300000, guid: 2118404957fb2ed4fb04df5ba248edcb, type: 3}
+  Walk2: {fileID: 21300000, guid: b43de9e208bc848488174ced83320a7a, type: 3}
   attackSprite: {fileID: 21300000, guid: 11c32d40daa63e547a50606be4d85706, type: 3}
 --- !u!65 &2019389439248374569
 BoxCollider:

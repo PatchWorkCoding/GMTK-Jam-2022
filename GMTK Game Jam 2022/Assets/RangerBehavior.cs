@@ -172,11 +172,38 @@ public class RangerBehavior :EnemyBehavior
 
     IEnumerator Attack()
     {
-        if (name == "enemy: 6")
+        //int _dst = GM.RangedAttack(index, fireDir, range, attack);
+        int _dst = 0;
+        Vector2Int _attackIndex = GM.RangedAttack(index, fireDir, range, attack, out _dst);
+        if (fireDir == new Vector2Int(0, 1))
         {
-            print("attackig");
+            transform.GetChild(1).localScale = new Vector3(-1, 1, 1);
         }
-        GM.RangedAttack(index, fireDir, range, attack);
-        yield return new WaitForSeconds(0.1f);
+        else if (fireDir == new Vector2Int(0, -1))
+        {
+            transform.GetChild(1).localScale = new Vector3(1, 1, 1);
+        }
+        else if (fireDir == new Vector2Int(-1, 0))
+        {
+            transform.GetChild(1).localScale = new Vector3(-1, 1, 1);
+        }
+        else if (fireDir == new Vector2Int(1, 0))
+        {
+            transform.GetChild(1).localScale = new Vector3(1, 1, 1);
+        }
+
+        transform.GetChild(1).gameObject.SetActive(true);
+        transform.GetChild(1).position = new Vector3(index.x, 0.5f, index.y);
+
+        for (int i = 0; i < _dst; i++)
+        {
+
+            transform.GetChild(1).position += new Vector3(fireDir.x, 0, fireDir.y);
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        transform.GetChild(1).gameObject.SetActive(false);
+        GM.Attack(_attackIndex, attack);
+        yield return new WaitForSeconds(0.3f);
     }
 }

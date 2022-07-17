@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 8
   speed: 0
-  attack: 1
+  attack: 3
   target: {x: 0, y: 0}
   maxMoves: 1
   spawnIndex: 1

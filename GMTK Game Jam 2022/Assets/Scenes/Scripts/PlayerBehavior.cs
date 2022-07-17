@@ -134,9 +134,23 @@ public class PlayerBehavior : MonoBehaviour
         }
 
         spriteRenderer.sprite = attackSprite;
-        GM.Attack(index + _dir, roller.DieFace());
 
-        yield return new WaitForSeconds(0.1f);
+        if (!GM.Attack(index + _dir, roller.DieFace()))
+        {
+            GM.StartAttackBeep();
+            yield return new WaitForSeconds(0.1f);
+            GM.StopAttackBeep();
+        }
+        else
+        {
+            GM.deathSource.Play();
+            yield return new WaitForSeconds(0.2f);
+            GM.deathSource.Stop();
+        }
+        
+
+        yield return new WaitForSeconds(0.25f);
+
         spriteRenderer.sprite = defaultSprite;
 
         if (moveCount >= movesPerTurn)
@@ -185,24 +199,36 @@ public class PlayerBehavior : MonoBehaviour
                     Destroy(curArrowParent);
                 }
 
+                GM.StartBeep();
                 uiManager.UpdateTransitions(_moveDir);
                 Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
+                GM.StopBeep();
+                yield return new WaitForSeconds(0.05f);
+                GM.StartBeep();
+
                 spriteRenderer.sprite = Walk1;
                 transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
+                GM.StopBeep();
+                yield return new WaitForSeconds(0.05f);
+                GM.StartBeep();
+
                 spriteRenderer.sprite = Walk2;
                 transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
+                GM.StopBeep();
+                yield return new WaitForSeconds(0.05f);
                 spriteRenderer.sprite = defaultSprite;
                 transform.position = _finalPos;
 
                 uiManager.UpdateMoveDie(roller.DieFace() - 1);
 
                 index += _moveDir;
+
                 
 
                 unavalibeDir = -_moveDir;
@@ -254,11 +280,64 @@ public class PlayerBehavior : MonoBehaviour
 
         if (health <= 0)
         {
-            GM.ResetGame();
-            Destroy(roller.gameObject);
-            Destroy(gameObject);
-            //Debug.Log("Dead");
+            StartCoroutine(DeathAnim());
         }
+        else
+        {
+            StartCoroutine(ShakeScreen());
+        }
+    }
+
+    IEnumerator ShakeScreen()
+    {
+        GM.StartAttackBeep();
+
+        spriteRenderer.gameObject.SetActive(false);
+        myCamera.transform.position = myCamera.transform.position + (myCamera.transform.right * 0.1f);
+
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(true);
+        myCamera.transform.position = myCamera.transform.position + (myCamera.transform.right * -0.2f);
+
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(false);
+        myCamera.transform.position = myCamera.transform.position + (myCamera.transform.right * 0.2f);
+
+        GM.StopAttackBeep();
+
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(true);
+        myCamera.transform.position = myCamera.transform.position + (myCamera.transform.right * -0.2f);
+
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(false);
+        myCamera.transform.position = myCamera.transform.position + (myCamera.transform.right * 0.2f);
+
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(true);
+        myCamera.transform.position = myCamera.transform.position + (myCamera.transform.right * -0.1f);
+    }
+
+    IEnumerator DeathAnim()
+    {
+        GM.deathSource.Play();
+
+        spriteRenderer.sprite = GM.deathSprite1;
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.sprite = GM.deathSprite2;
+        yield return new WaitForSeconds(0.25f);
+
+        GM.deathSource.Stop();
+
+        GM.ResetGame();
+        Destroy(roller.gameObject);
+
+        if (curArrowParent != null)
+        {
+            Destroy(curArrowParent);
+        }
+        
+        Destroy(gameObject);
     }
 
     public void Curse()

@@ -30,6 +30,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     UIManager UI = null;
     PlayerBehavior curPlayer = null;
+    [SerializeField]
+    public AudioSource beepSource = null, attackSource = null, deathSource = null;
+    [SerializeField]
+    public Sprite deathSprite1 = null, deathSprite2 = null;
     
     List<EnemyBehavior> curEnemies = null;
     List<GameObject> fireSprites = null;
@@ -116,12 +120,12 @@ public class GameManager : MonoBehaviour
         return false;
     } 
 
-    public void Attack(Vector2Int _index, int _damage)
+    public bool Attack(Vector2Int _index, int _damage)
     {
         if (curPlayer.Index == _index)
         {
             Player.TakeDamage(_damage);
-
+            return false;
         }
         else
         {
@@ -133,13 +137,17 @@ public class GameManager : MonoBehaviour
                     curEnemies[i].Health -= _damage;
 
                     SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
+
+                    return curEnemies[i].Health <= 0;
                 }
             }
         }
+        return false;
     }
 
-    public void RangedAttack(Vector2Int _index, Vector2Int _dir, int _length, int _damage)
+    public Vector2Int RangedAttack(Vector2Int _index, Vector2Int _dir, int _length, int _damage, out int _returnDst)
     {
+        _returnDst = _length;
         Vector2Int _curIndex = _index;
         for (int i = 0; i < _length; i++)
         {
@@ -148,36 +156,34 @@ public class GameManager : MonoBehaviour
             {
                 if (curPlayer.Index == _curIndex)
                 {
-                    Player.TakeDamage(_damage);
-                    break;
+                    _returnDst = i;
+                    return _curIndex;
                 }
 
                 else
                 {
-                    bool _foundEnemy = false;
                     for (int n = 0; n < curEnemies.Count; n++)
                     {
                         if (curEnemies[n].Index == _curIndex)
                         {
                             int _state = curEnemies[n].Health - _damage;
                             curEnemies[n].Health -= _damage;
-                            _foundEnemy = true;
                             SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
-                            break;
+                            _returnDst = i;
+                            return _curIndex;
                         }
-                    }
-                    if (_foundEnemy)
-                    {
-                        break;
                     }
                 }
             }
 
             else
             {
-                break;
+                _returnDst = i;
+                return _curIndex;
             }
         }
+
+        return _curIndex;
     }
 
     public void SpellAttack(Vector2Int _index, Vector2Int _size, int _damage)
@@ -358,6 +364,26 @@ public class GameManager : MonoBehaviour
         {
             curEnemies[turnOrderIndex].Turn();
         }
+    }
+
+    public void StartBeep()
+    {
+        beepSource.Play();
+    }
+
+    public void StopBeep()
+    {
+        beepSource.Stop();
+    }
+
+    public void StartAttackBeep()
+    {
+        attackSource.Play();
+    }
+
+    public void StopAttackBeep()
+    {
+        attackSource.Stop();
     }
 
     void RemoveFire() 

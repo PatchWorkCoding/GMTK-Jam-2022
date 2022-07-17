@@ -94,6 +94,30 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
+    IEnumerator DamageFlash()
+    {
+        spriteRenderer.gameObject.SetActive(false);
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(false);
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(false);
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.gameObject.SetActive(true);
+    }
+
+    IEnumerator DeathAnim()
+    {
+        spriteRenderer.sprite = GM.deathSprite1;
+        yield return new WaitForSeconds(0.05f);
+        spriteRenderer.sprite = GM.deathSprite2;
+        yield return new WaitForSeconds(0.05f);
+        Die();
+    }
+
     protected virtual void FindTarget()
     {
         target = GM.Player.Index;
@@ -126,9 +150,14 @@ public class EnemyBehavior : MonoBehaviour
         set 
         { 
             health = value;
+            if (health > 0)
+            {
+                StartCoroutine(DamageFlash());
+            }
+            
             if (health <= 0)
             {
-                Die();
+                StartCoroutine(DeathAnim());
             }
 
             //print("health: " + health + " - name: " + name);
