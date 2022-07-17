@@ -128,70 +128,18 @@ public class RangerBehavior :EnemyBehavior
 
         _returnDirs.Add(_prefferedDir);
 
-        
-
-        if (_prefferedDir.y != 0)
+        if (_returnDirs[0].y != 0)
         {
-            Vector2Int[] _otherDirs = new Vector2Int[]
-            {
-                new Vector2Int(1, 0),
-                new Vector2Int(-1, 0),
-                new Vector2Int(0, -_prefferedDir.y),
-            };
-
-            float _closetDir = 10000;
-            int _closetIndex = -1;
-
-            for (int i = 0; i < _otherDirs.Length; i++)
-            {
-                if (Vector2Int.Distance(target, _otherDirs[i]) < _closetDir)
-                {
-                    _closetIndex = i;
-                    _closetDir = Vector2Int.Distance(target, _otherDirs[i]);
-                }
-            }
-
-            _returnDirs.Add(_otherDirs[_closetIndex]);
-
-            for (int i = 0; i < _otherDirs.Length; i++)
-            {
-                if (i != _closetIndex)
-                {
-                    _returnDirs.Add(_otherDirs[i]);
-                }
-            }
+            _returnDirs.Add(new Vector2Int(1, 0));
+            _returnDirs.Add(new Vector2Int(-1, 0));
+            _returnDirs.Add(new Vector2Int(0, -_returnDirs[0].y));
         }
 
-        else if (_prefferedDir.x != 0)
+        else if (_returnDirs[0].x != 0)
         {
-            Vector2Int[] _otherDirs = new Vector2Int[]
-            {
-                (new Vector2Int(0, 1)),
-                (new Vector2Int(0, -1)),
-                (new Vector2Int(-_prefferedDir.x, 0)),
-            };
-
-            float _closetDir = 10000;
-            int _closetIndex = -1;
-
-            for (int i = 0; i < _otherDirs.Length; i++)
-            {
-                if (Vector2Int.Distance(target, _otherDirs[i]) < _closetDir)
-                {
-                    _closetIndex = i;
-                    _closetDir = Vector2Int.Distance(target, _otherDirs[i]);
-                }
-            }
-
-            _returnDirs.Add(_otherDirs[_closetIndex]);
-
-            for (int i = 0; i < _otherDirs.Length; i++)
-            {
-                if (i != _closetIndex)
-                {
-                    _returnDirs.Add(_otherDirs[i]);
-                }
-            }
+            _returnDirs.Add(new Vector2Int(0, 1));
+            _returnDirs.Add(new Vector2Int(0, -1));
+            _returnDirs.Add(new Vector2Int(-_returnDirs[0].x, 0));
         }
 
         return _returnDirs.ToArray();
