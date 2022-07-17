@@ -3717,12 +3717,12 @@ Transform:
   - {fileID: 657430349}
   - {fileID: 277448920}
   - {fileID: 1713380386}
+  - {fileID: 1559656046}
   - {fileID: 699925729}
   - {fileID: 446956604}
   - {fileID: 1852578898}
-  - {fileID: 1559656046}
-  - {fileID: 1459002373}
   - {fileID: 1615667471}
+  - {fileID: 1459002373}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5734,7 +5734,7 @@ Transform:
   m_Children:
   - {fileID: 1387597289}
   m_Father: {fileID: 764068212}
-  m_RootOrder: 35
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!64 &1559656047
 MeshCollider:
@@ -8409,6 +8409,10 @@ PrefabInstance:
     - target: {fileID: 1407177892541606556, guid: 6c014ccbd33df6848a4701410209527e, type: 3}
       propertyPath: m_Name
       value: GameManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1407177892541606557, guid: 6c014ccbd33df6848a4701410209527e, type: 3}
+      propertyPath: path
+      value: Level3
       objectReference: {fileID: 0}
     - target: {fileID: 1407177892541606558, guid: 6c014ccbd33df6848a4701410209527e, type: 3}
       propertyPath: m_RootOrder

@@ -9,6 +9,8 @@ public class OgreBehavior : EnemyBehavior
     {
         while (curMoves < maxMoves)
         {
+            yield return new WaitForSeconds(0.25f);
+
             if (Vector2Int.Distance(target, index) > 1)
             {
                 //print("called");

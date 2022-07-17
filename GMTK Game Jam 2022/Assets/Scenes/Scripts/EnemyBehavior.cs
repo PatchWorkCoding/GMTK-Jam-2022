@@ -18,6 +18,8 @@ public class EnemyBehavior : MonoBehaviour
     protected Vector2Int target = new Vector2Int(0, 0);
     [SerializeField]
     protected int maxMoves = 0;
+    [SerializeField]
+    GameObject healthBar = null;
 
     [SerializeField]
     int spawnIndex = 0;
@@ -28,15 +30,15 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField]
     protected Sprite defaultSprite, Walk1, Walk2, attackSprite;
 
-
+    float healthInterval = 0;
     protected int curMoves = 0;
-
     protected Vector2Int index = Vector2Int.zero;
 
     // Start is called before the first frame update
     public void Init(GameManager _GM, Vector2Int _index)
     {
         GM = _GM;
+        healthInterval = 1f / (float)health;
         this.gameObject.tag = "Enemy";
         index = _index;
     }
@@ -73,30 +75,20 @@ public class EnemyBehavior : MonoBehaviour
         {
             if (GM.Move(index, _dirs[i]))
             {
-                GM.enemyWalk.Play();
-
                 Vector3 _finalPos = transform.position + new Vector3(_dirs[i].x, 0, _dirs[i].y);
 
-                yield return new WaitForSeconds(0.05f);
-                GM.enemyWalk.Stop();
-                yield return new WaitForSeconds(0.05f);
-                GM.enemyWalk.Play();
+                yield return new WaitForSeconds(0.1f);
 
                 spriteRenderer.sprite = Walk1;
                 transform.position = transform.position + (new Vector3(_dirs[i].x, 0, _dirs[i].y).normalized * 0.3f);
-
-                yield return new WaitForSeconds(0.05f);
-                GM.enemyWalk.Stop();
-                yield return new WaitForSeconds(0.05f);
-                GM.enemyWalk.Play();
-
+                yield return new WaitForSeconds(0.1f);
                 spriteRenderer.sprite = Walk2;
                 transform.position = transform.position + (new Vector3(_dirs[i].x, 0, _dirs[i].y).normalized * 0.3f);
 
                 yield return new WaitForSeconds(0.05f);
-                GM.enemyWalk.Stop();
+                GM.enemyWalk.Play();
                 yield return new WaitForSeconds(0.05f);
-
+                GM.enemyWalk.Stop();
                 spriteRenderer.sprite = defaultSprite;
                 transform.position = _finalPos;
 
@@ -109,6 +101,9 @@ public class EnemyBehavior : MonoBehaviour
 
     IEnumerator DamageFlash()
     {
+        healthBar.transform.localScale =
+            new Vector3(health * healthInterval, 1, 1);
+
         spriteRenderer.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.05f);
         spriteRenderer.gameObject.SetActive(true);
@@ -163,6 +158,7 @@ public class EnemyBehavior : MonoBehaviour
         set 
         { 
             health = value;
+            print("health: " + health + " - name: " + name);
             if (health > 0)
             {
                 StartCoroutine(DamageFlash());

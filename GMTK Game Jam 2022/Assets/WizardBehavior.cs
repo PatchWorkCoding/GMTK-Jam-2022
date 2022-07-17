@@ -13,6 +13,7 @@ public class WizardBehavior : EnemyBehavior
     {
         while (curMoves < maxMoves)
         {
+            yield return new WaitForSeconds(0.25f);
             if (movesSinceLastAttack > movesBetweenAttacks)
             {
                 StartCoroutine(Attack());

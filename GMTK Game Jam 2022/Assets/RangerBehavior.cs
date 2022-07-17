@@ -18,19 +18,21 @@ public class RangerBehavior :EnemyBehavior
     {
         while (curMoves < maxMoves)
         {
-            if (name == "enemy: 0")
+            yield return new WaitForSeconds(0.25f);
+
+            if (name == "enemy: 1")
             {
 
             }
 
             if (!readyAttack)
             {
-                if (Vector2Int.Distance(target, index) > 1 && (target.x == index.x || target.y == index.y))
+                if (Vector2Int.Distance(target, Index) > 1 && (target.x == Index.x || target.y == Index.y))
                 {
                     readyAttack = true;
                     curMarker = new GameObject();
-                    Vector2Int _curIndex = index;
-                    fireDir = new Vector2Int(CollapseToOne(target.x, index.x), CollapseToOne(target.y, index.y));
+                    Vector2Int _curIndex = Index;
+                    fireDir = new Vector2Int(CollapseToOne(target.x, Index.x), CollapseToOne(target.y, Index.y));
                     for (int i = 0; i < range; i++)
                     {
                         _curIndex += fireDir;
@@ -74,33 +76,83 @@ public class RangerBehavior :EnemyBehavior
             curMoves++;
         }
 
+        if (GM.GetBoardCellState(index) <= 0)
+        {
+            GM.SetBoardCellState(index, 1);
+        }
+
         TurnOver();
     }
 
     protected override Vector2Int[] GeneratePossibleDirections()
     {
+        List<Vector2Int> _dirs = new List<Vector2Int>();
+        if (target.x != index.x)
+        {
+            if (target.x > index.x)
+            {
+                _dirs.Add(new Vector2Int(1, 0));
+                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+            else
+            {
+                _dirs.Add(new Vector2Int(-1, 0));
+                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
+        else if (target.y != index.y)
+        {
+            if (target.y > index.y)
+            {
+                _dirs.Add(new Vector2Int(0, 1));
+                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else
+            {
+                _dirs.Add(new Vector2Int(0, -1));
+                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
+
+        if (_dirs[0].y != 0)
+        {
+            _dirs.Add(new Vector2Int(1, 0));
+            _dirs.Add(new Vector2Int(-1, 0));
+            _dirs.Add(new Vector2Int(0, -_dirs[0].y));
+        }
+
+        else if (_dirs[0].x != 0)
+        {
+            _dirs.Add(new Vector2Int(0, 1));
+            _dirs.Add(new Vector2Int(0, -1));
+            _dirs.Add(new Vector2Int(-_dirs[0].x, 0));
+        }
+
+        return _dirs.ToArray();
+
+        /*
         List<Vector2Int> _returnDirs = new List<Vector2Int>();
 
         Vector2Int _prefferedDir = Vector2Int.zero;
 
-        if (Vector2Int.Distance(target, index) <= 1)
+        if (Vector2Int.Distance(target, Index) <= 1)
         {
-            if (target.x == index.x)
+            if (target.x == Index.x)
             {
-                _prefferedDir = new Vector2Int(0, index.y - target.y);
+                _prefferedDir = new Vector2Int(0, Index.y - target.y);
             }
 
-            else if (target.y == index.y)
+            else if (target.y == Index.y)
             {
-                _prefferedDir = new Vector2Int(index.x - target.x, 0);
+                _prefferedDir = new Vector2Int(Index.x - target.x, 0);
             }
         }
 
         else
         {
-            if (target.x != index.x)
+            if (target.x != Index.x)
             {
-                if (target.x > index.x)
+                if (target.x > Index.x)
                 {
                     _prefferedDir = (new Vector2Int(1, 0));
                     spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
@@ -111,9 +163,9 @@ public class RangerBehavior :EnemyBehavior
                     spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
                 }
             }
-            else if (target.y != index.y)
+            else if (target.y != Index.y)
             {
-                if (target.y > index.y)
+                if (target.y > Index.y)
                 {
                     _prefferedDir = (new Vector2Int(0, 1));
                     spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
@@ -143,6 +195,7 @@ public class RangerBehavior :EnemyBehavior
         }
 
         return _returnDirs.ToArray();
+        */
     }
 
     int CollapseToOne(int _a, int _b)
@@ -172,9 +225,10 @@ public class RangerBehavior :EnemyBehavior
 
     IEnumerator Attack()
     {
-        //int _dst = GM.RangedAttack(index, fireDir, range, attack);
+        //int _dst = GM.RangedAttack(Index, fireDir, range, attack);
         int _dst = 0;
-        Vector2Int _attackIndex = GM.RangedAttack(index, fireDir, range, attack, out _dst);
+        Vector2Int _attackIndex = GM.RangedAttack(Index, fireDir, range, attack, out _dst);
+        
         if (fireDir == new Vector2Int(0, 1))
         {
             transform.GetChild(1).localScale = new Vector3(-1, 1, 1);
@@ -194,7 +248,7 @@ public class RangerBehavior :EnemyBehavior
 
 
         transform.GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(1).position = new Vector3(index.x, 0.5f, index.y);
+        transform.GetChild(1).position = new Vector3(Index.x, 0.5f, Index.y);
 
         GM.pewSource.Play();
         yield return new WaitForSeconds(0.05f);
@@ -209,6 +263,12 @@ public class RangerBehavior :EnemyBehavior
         }
 
         transform.GetChild(1).gameObject.SetActive(false);
+  
+        if (name == "enemy: 1")
+        {
+
+        }
+
         GM.Attack(_attackIndex, attack);
         yield return new WaitForSeconds(0.3f);
     }

@@ -133,12 +133,13 @@ public class GameManager : MonoBehaviour
             SwapStates(_curIndex, _curIndex + _dir);
             return true;
         }
+        /*
         else if (_boardCellState == 15)
         {
             SwapStates(_curIndex, _curIndex + _dir);
             return true;
         }
-
+        */
         return false;
     }
 
@@ -155,10 +156,8 @@ public class GameManager : MonoBehaviour
             {
                 if (curEnemies[i].Index == _index)
                 {
-                    int _state = curEnemies[i].Health - _damage;
+                    //int _state = curEnemies[i].Health - _damage;
                     curEnemies[i].Health -= _damage;
-
-                    SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
 
                     return curEnemies[i].Health <= 0;
                 }
@@ -285,6 +284,7 @@ public class GameManager : MonoBehaviour
 
     public void RemoveEnemy(EnemyBehavior _enemy)
     {
+        board[_enemy.Index.x, _enemy.Index.y] = 0;
         curEnemies.Remove(_enemy);
         curEnemies.TrimExcess();
     }
