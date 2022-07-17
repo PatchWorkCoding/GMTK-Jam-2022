@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 907273856230582446}
   m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535535}
-  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6583373373936970882}
@@ -128,13 +128,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76eb6489442443348bcb1a8e66d70893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
+  health: 3
   speed: 0
-  attack: 1
+  attack: 3
   target: {x: 0, y: 0}
-  maxMoves: 1
+  maxMoves: 2
   spawnIndex: 2
-  range: 3
+  range: 14
   spriteRenderer: {fileID: 7734043752332384558}
   defaultSprite: {fileID: 21300000, guid: 391367d06b79d6d449931862834acb78, type: 3}
   Walk1: {fileID: 21300000, guid: 8fa9187fea25cb04d829d09493a5fc9f, type: 3}
