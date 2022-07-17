@@ -134,13 +134,13 @@ MonoBehaviour:
   target: {x: 0, y: 0}
   maxMoves: 2
   spawnIndex: 2
-  range: 14
   spriteRenderer: {fileID: 7734043752332384558}
   defaultSprite: {fileID: 21300000, guid: 391367d06b79d6d449931862834acb78, type: 3}
   Walk1: {fileID: 21300000, guid: 8fa9187fea25cb04d829d09493a5fc9f, type: 3}
   Walk2: {fileID: 21300000, guid: a37244fa18e16c54399e9676c7b062e3, type: 3}
   attackSprite: {fileID: 21300000, guid: ef9f1376713062a4ab0518024be76b99, type: 3}
-  shootMarker: {fileID: 7069756548365312125, guid: 1b3d38a80d806ce488b0cf883ec08310, type: 3}
+  range: 14
+  shootMarker: {fileID: 7069756548365312125, guid: 9933c5eb67496a64d8696f250c0c1c46, type: 3}
 --- !u!65 &9016661517562318967
 BoxCollider:
   m_ObjectHideFlags: 0

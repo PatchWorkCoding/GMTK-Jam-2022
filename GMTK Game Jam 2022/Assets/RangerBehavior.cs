@@ -12,10 +12,17 @@ public class RangerBehavior :EnemyBehavior
     GameObject curMarker = null;
     bool readyAttack = false;
 
+    Vector2Int fireDir = Vector2Int.zero;
+
     protected override IEnumerator RunBehaviorTree()
     {
         while (curMoves < maxMoves)
         {
+            if (name == "enemy: 0")
+            {
+
+            }
+
             if (!readyAttack)
             {
                 if (Vector2Int.Distance(target, index) > 1 && (target.x == index.x || target.y == index.y))
@@ -23,13 +30,18 @@ public class RangerBehavior :EnemyBehavior
                     readyAttack = true;
                     curMarker = new GameObject();
                     Vector2Int _curIndex = index;
+                    fireDir = new Vector2Int(CollapseToOne(target.x, index.x), CollapseToOne(target.y, index.y));
                     for (int i = 0; i < range; i++)
                     {
-                        _curIndex += new Vector2Int(CollapseToOne(target.x, index.x), CollapseToOne(target.y, index.y));
-                        if (GM.GetBoardCellState(_curIndex) != 99)
+                        _curIndex += fireDir;
+
+                        if (GM.GetBoardCellState(_curIndex) != 99 && GM.GetBoardCellState(_curIndex) != -1)
                         {
-                            Instantiate(shootMarker, new Vector3(_curIndex.x, 0, _curIndex.y),
-                                Quaternion.identity).transform.parent = curMarker.transform;
+                            Transform _cur = Instantiate(shootMarker, new Vector3(_curIndex.x, 0, _curIndex.y),
+                                Quaternion.identity).transform;
+
+                            _cur.forward = new Vector3(fireDir.x, 0, fireDir.y);
+                            _cur.transform.parent = curMarker.transform;
                         }
 
                         else
@@ -44,8 +56,8 @@ public class RangerBehavior :EnemyBehavior
                 }
                 else
                 {
-                    StartCoroutine(Move());
-                    yield return new WaitForSeconds(0.5f);
+                    Coroutine _move = StartCoroutine(Move());
+                    yield return _move;
                 }
             }
             else
@@ -53,10 +65,10 @@ public class RangerBehavior :EnemyBehavior
                 spriteRenderer.sprite = defaultSprite;
                 Destroy(curMarker);
 
-                StartCoroutine(Attack());
+                Coroutine _attack = StartCoroutine(Attack());
 
                 readyAttack = false;
-                yield return new WaitForSeconds(0.1f);
+                yield return _attack;
             }
 
             curMoves++;
@@ -116,18 +128,70 @@ public class RangerBehavior :EnemyBehavior
 
         _returnDirs.Add(_prefferedDir);
 
+        
+
         if (_prefferedDir.y != 0)
         {
-            _returnDirs.Add(new Vector2Int(1, 0));
-            _returnDirs.Add(new Vector2Int(-1, 0));
-            _returnDirs.Add(new Vector2Int(0, -_prefferedDir.y));
+            Vector2Int[] _otherDirs = new Vector2Int[]
+            {
+                new Vector2Int(1, 0),
+                new Vector2Int(-1, 0),
+                new Vector2Int(0, -_prefferedDir.y),
+            };
+
+            float _closetDir = 10000;
+            int _closetIndex = -1;
+
+            for (int i = 0; i < _otherDirs.Length; i++)
+            {
+                if (Vector2Int.Distance(target, _otherDirs[i]) < _closetDir)
+                {
+                    _closetIndex = i;
+                    _closetDir = Vector2Int.Distance(target, _otherDirs[i]);
+                }
+            }
+
+            _returnDirs.Add(_otherDirs[_closetIndex]);
+
+            for (int i = 0; i < _otherDirs.Length; i++)
+            {
+                if (i != _closetIndex)
+                {
+                    _returnDirs.Add(_otherDirs[i]);
+                }
+            }
         }
 
         else if (_prefferedDir.x != 0)
         {
-            _returnDirs.Add(new Vector2Int(0, 1));
-            _returnDirs.Add(new Vector2Int(0, -1));
-            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, 0));
+            Vector2Int[] _otherDirs = new Vector2Int[]
+            {
+                (new Vector2Int(0, 1)),
+                (new Vector2Int(0, -1)),
+                (new Vector2Int(-_prefferedDir.x, 0)),
+            };
+
+            float _closetDir = 10000;
+            int _closetIndex = -1;
+
+            for (int i = 0; i < _otherDirs.Length; i++)
+            {
+                if (Vector2Int.Distance(target, _otherDirs[i]) < _closetDir)
+                {
+                    _closetIndex = i;
+                    _closetDir = Vector2Int.Distance(target, _otherDirs[i]);
+                }
+            }
+
+            _returnDirs.Add(_otherDirs[_closetIndex]);
+
+            for (int i = 0; i < _otherDirs.Length; i++)
+            {
+                if (i != _closetIndex)
+                {
+                    _returnDirs.Add(_otherDirs[i]);
+                }
+            }
         }
 
         return _returnDirs.ToArray();
@@ -153,9 +217,18 @@ public class RangerBehavior :EnemyBehavior
         }
     }
 
+    private void OnDestroy()
+    {
+        Destroy(curMarker);
+    }
+
     IEnumerator Attack()
     {
-        GM.RangedAttack(index, new Vector2Int(CollapseToOne(target.x, index.x), CollapseToOne(target.y, index.y)), range, attack);
+        if (name == "enemy: 6")
+        {
+            print("attackig");
+        }
+        GM.RangedAttack(index, fireDir, range, attack);
         yield return new WaitForSeconds(0.1f);
     }
 }

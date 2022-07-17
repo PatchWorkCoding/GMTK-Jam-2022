@@ -11,7 +11,7 @@ public class KnightBehavior : EnemyBehavior
         {
             if (Vector2Int.Distance(target, index) > 1)
             {
-                print("called");
+                //print("called");
                 StartCoroutine(Move());
             }
 

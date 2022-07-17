@@ -13,7 +13,7 @@ public class WizardBehavior : EnemyBehavior
     {
         while (curMoves < maxMoves)
         {
-            if (isWithinRange())
+            if (movesSinceLastAttack < movesBetweenAttacks)
             {
                 StartCoroutine(Attack());
                 movesSinceLastAttack = 0;
@@ -100,10 +100,5 @@ public class WizardBehavior : EnemyBehavior
         {
             return -1;
         }
-    }
-
-    bool isWithinRange()
-    {
-        return (index.x - 1 == target.x || index.x + 1 == target.x) && (index.y - 1 == target.y || index.y + 1 == target.y);
     }
 }

@@ -30,6 +30,7 @@ public class PlayerBehavior : MonoBehaviour
     DieRoller roller = null;
 
     Vector2Int index = Vector2Int.zero;
+    Vector2Int unavalibeDir = Vector2Int.zero;
     
     int moveCount = 0;
     int turnsWithCurse = 0;
