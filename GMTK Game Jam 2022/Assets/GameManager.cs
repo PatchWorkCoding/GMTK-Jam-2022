@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager GM = null;
+
     [Header("Map Properties")]
     [SerializeField]
     int width = 10;
@@ -31,12 +34,15 @@ public class GameManager : MonoBehaviour
     UIManager UI = null;
     PlayerBehavior curPlayer = null;
     [SerializeField]
-    public AudioSource beepSource = null, attackSource = null, deathSource = null;
+    public AudioSource beepSource = null, attackSource = null, 
+        deathSource = null, enemyWalk = null, pewSource = null, hissSource = null;
     [SerializeField]
     public Sprite deathSprite1 = null, deathSprite2 = null;
-    
+
     List<EnemyBehavior> curEnemies = null;
     List<GameObject> fireSprites = null;
+
+    int curLevelIndex = 0;
 
     int turnOrderIndex = -1;
     //Dictionary<Vector2Int, EnemyBehavior> enemyDic = null;
@@ -46,18 +52,34 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-        PopulateBoard();
-        ProgressTurn();
+        if (GM != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        else
+        {
+            GM = this;
+            DontDestroyOnLoad(gameObject);
+            //curLevelIndex = 1;
+            //path = "Level" + (curLevelIndex + 1);
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            //PopulateBoard(path);
+            //ProgressTurn();
+        }
+
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public void PopulateBoard()
+    public void PopulateBoard(string _populateBoard)
     {
         board = new int[width, height];
         curEnemies = new List<EnemyBehavior>();
@@ -88,7 +110,7 @@ public class GameManager : MonoBehaviour
 
                     else
                     {
-                        EnemyBehavior _enemy = Instantiate(enemyPrefabs[_saveData.BoardStates[x][y] - 1], new Vector3(x, 0, y), 
+                        EnemyBehavior _enemy = Instantiate(enemyPrefabs[_saveData.BoardStates[x][y] - 1], new Vector3(x, 0, y),
                             Quaternion.identity).GetComponent<EnemyBehavior>();
 
                         _enemy.Init(this, new Vector2Int(x, y));
@@ -97,7 +119,7 @@ public class GameManager : MonoBehaviour
                         curEnemies.Add(_enemy);
                     }
                 }
-                
+
             }
         }
     }
@@ -118,7 +140,7 @@ public class GameManager : MonoBehaviour
         }
 
         return false;
-    } 
+    }
 
     public bool Attack(Vector2Int _index, int _damage)
     {
@@ -187,7 +209,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void SpellAttack(Vector2Int _index, Vector2Int _size, int _damage)
-    {   
+    {
         for (int x = -Mathf.FloorToInt(_size.x / 2); x < _size.x; x++)
         {
             for (int y = -Mathf.FloorToInt(_size.x / 2); y < _size.y; y++)
@@ -257,7 +279,7 @@ public class GameManager : MonoBehaviour
         curEnemies.Clear();
         curEnemies.TrimExcess();
 
-        PopulateBoard();
+        PopulateBoard(path);
         ProgressTurn();
     }
 
@@ -276,7 +298,7 @@ public class GameManager : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
 
-                
+
                 RaycastHit _hit;
                 if (Physics.Raycast(new Vector3(x, 100, y), Vector3.down, out _hit))
                 {
@@ -309,6 +331,7 @@ public class GameManager : MonoBehaviour
 
                 else
                 {
+                    Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.black, 10);
                     _boardStates[x][y] = -1;
                 }
             }
@@ -367,6 +390,12 @@ public class GameManager : MonoBehaviour
         {
             curEnemies[turnOrderIndex].Turn();
         }
+
+        if (curEnemies.Count <= 0)
+        {
+            curLevelIndex++;
+            LoadNextLevel();
+        }
     }
 
     public void StartBeep()
@@ -389,7 +418,7 @@ public class GameManager : MonoBehaviour
         attackSource.Stop();
     }
 
-    void RemoveFire() 
+    void RemoveFire()
     {
         if (fireSprites.Count > 0)
         {
@@ -411,6 +440,20 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    void LoadNextLevel()
+    {
+        print("called");
+        path = "Level" + (curLevelIndex + 1);
+        SceneManager.LoadScene("Level" + (curLevelIndex + 1), LoadSceneMode.Single);
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        PopulateBoard(path);
+        ProgressTurn();
+    }
+    //on
 }
 
 [CustomEditor(typeof(GameManager))]
@@ -424,10 +467,12 @@ public class GameManagerEditor : Editor
             (target as GameManager).BakeBoard();
         }
 
+        /*
         if (GUILayout.Button("Load Map"))
         {
             (target as GameManager).PopulateBoard();
         }
+        */
     }
 }
 

@@ -73,21 +73,34 @@ public class EnemyBehavior : MonoBehaviour
         {
             if (GM.Move(index, _dirs[i]))
             {
+                GM.enemyWalk.Play();
+
                 Vector3 _finalPos = transform.position + new Vector3(_dirs[i].x, 0, _dirs[i].y);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
+                GM.enemyWalk.Stop();
+                yield return new WaitForSeconds(0.05f);
+                GM.enemyWalk.Play();
+
                 spriteRenderer.sprite = Walk1;
                 transform.position = transform.position + (new Vector3(_dirs[i].x, 0, _dirs[i].y).normalized * 0.3f);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
+                GM.enemyWalk.Stop();
+                yield return new WaitForSeconds(0.05f);
+                GM.enemyWalk.Play();
+
                 spriteRenderer.sprite = Walk2;
                 transform.position = transform.position + (new Vector3(_dirs[i].x, 0, _dirs[i].y).normalized * 0.3f);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.05f);
+                GM.enemyWalk.Stop();
+                yield return new WaitForSeconds(0.05f);
+
                 spriteRenderer.sprite = defaultSprite;
                 transform.position = _finalPos;
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.25f);
                 index += _dirs[i];
                 break;
             }

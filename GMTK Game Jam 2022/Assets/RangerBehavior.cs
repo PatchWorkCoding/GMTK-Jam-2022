@@ -192,8 +192,14 @@ public class RangerBehavior :EnemyBehavior
             transform.GetChild(1).localScale = new Vector3(1, 1, 1);
         }
 
+
         transform.GetChild(1).gameObject.SetActive(true);
         transform.GetChild(1).position = new Vector3(index.x, 0.5f, index.y);
+
+        GM.pewSource.Play();
+        yield return new WaitForSeconds(0.05f);
+        GM.pewSource.Stop();
+        yield return new WaitForSeconds(0.05f);
 
         for (int i = 0; i < _dst; i++)
         {

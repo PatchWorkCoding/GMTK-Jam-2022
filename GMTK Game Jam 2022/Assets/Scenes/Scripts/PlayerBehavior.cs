@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerBehavior : MonoBehaviour
 {
+
     [SerializeField]
     Camera myCamera;
     [SerializeField]
@@ -18,6 +19,9 @@ public class PlayerBehavior : MonoBehaviour
     UIManager uiManager;
     [SerializeField]
     Texture2D[] dieFaceTextures = null;
+    [SerializeField]
+    ParticleSystem hissParticle = null;
+
 
     [Header("Sprite Properties")]
     [SerializeField]
@@ -33,7 +37,7 @@ public class PlayerBehavior : MonoBehaviour
     Vector2Int unavalibeDir = Vector2Int.zero;
     
     int moveCount = 0;
-    int turnsWithCurse = 0;
+    //int turnsWithCurse = 0;
 
     int[] cursedFaces = null;
 
@@ -329,19 +333,23 @@ public class PlayerBehavior : MonoBehaviour
 
         GM.deathSource.Stop();
 
-        GM.ResetGame();
         Destroy(roller.gameObject);
 
         if (curArrowParent != null)
         {
             Destroy(curArrowParent);
         }
-        
+
         Destroy(gameObject);
+
+        GM.ResetGame();
+        
     }
 
     public void Curse()
     {
+        GameManager.GM.hissSource.Play();
+        hissParticle.Play();
         cursedFaces[roller.DieFace() - 1] = 2;
     }
 

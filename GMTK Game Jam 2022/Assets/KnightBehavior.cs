@@ -12,13 +12,12 @@ public class KnightBehavior : EnemyBehavior
             if (Vector2Int.Distance(target, index) > 1)
             {
                 //print("called");
-                StartCoroutine(Move());
+                yield return StartCoroutine(Move());
             }
 
             else
             {
-                StartCoroutine(Attack());
-                yield return new WaitForSeconds(1f);
+                yield return StartCoroutine(Attack());
                 break;
             }
 
