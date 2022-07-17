@@ -284,21 +284,24 @@ public class GameManager : MonoBehaviour
                     {
                         case "Player":
                             _boardStates[x][y] = 69;
+                            Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.blue, 10);
                             DestroyImmediate(_hit.transform.gameObject);
                             break;
 
                         case "Enemy":
                             _boardStates[x][y] = _hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1;
-                            //print(_hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1);
+                            Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.red, 10);
                             DestroyImmediate(_hit.transform.gameObject);
                             break;
 
                         case "Immoveable":
                             _boardStates[x][y] = -1;
+                            Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.black, 10);
                             break;
 
                         default:
                             //Debug.Log("called");
+                            Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.white, 10);
                             _boardStates[x][y] = 0;
                             break;
                     }
