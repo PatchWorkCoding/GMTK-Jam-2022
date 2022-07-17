@@ -185,7 +185,7 @@ public class PlayerBehavior : MonoBehaviour
                     Destroy(curArrowParent);
                 }
 
-                uiManager.UpdateMoveDie(6);
+                uiManager.UpdateTransitions(_moveDir);
                 Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
 
                 yield return new WaitForSeconds(0.1f);

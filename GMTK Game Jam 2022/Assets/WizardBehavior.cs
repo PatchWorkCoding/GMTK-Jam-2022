@@ -13,7 +13,7 @@ public class WizardBehavior : EnemyBehavior
     {
         while (curMoves < maxMoves)
         {
-            if (movesSinceLastAttack < movesBetweenAttacks)
+            if (movesSinceLastAttack > movesBetweenAttacks)
             {
                 StartCoroutine(Attack());
                 movesSinceLastAttack = 0;
@@ -40,21 +40,11 @@ public class WizardBehavior : EnemyBehavior
         int _y = CollapseToOne(target.y, index.y);
 
         Vector2Int _prefferedDir = new Vector2Int(_x == 0 ? RandomNegativeOne() : _x, _y == 0 ? RandomNegativeOne() : _y);
-        if (movesSinceLastAttack < movesBetweenAttacks)
-        {
-            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, -_prefferedDir.y));
-            _returnDirs.Add(new Vector2Int(_prefferedDir.x, -_prefferedDir.y));
-            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, _prefferedDir.y));
-            _returnDirs.Add(_prefferedDir);
-        }
 
-        else
-        {
-            _returnDirs.Add(_prefferedDir);
-            _returnDirs.Add(new Vector2Int(_prefferedDir.x, -_prefferedDir.y));
-            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, _prefferedDir.y));
-            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, -_prefferedDir.y));
-        }
+        _returnDirs.Add(_prefferedDir);
+        _returnDirs.Add(new Vector2Int(_prefferedDir.x, -_prefferedDir.y));
+        _returnDirs.Add(new Vector2Int(-_prefferedDir.x, _prefferedDir.y));
+        _returnDirs.Add(new Vector2Int(-_prefferedDir.x, -_prefferedDir.y));
 
         movesSinceLastAttack++;
         return _returnDirs.ToArray();

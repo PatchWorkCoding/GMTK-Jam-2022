@@ -285,6 +285,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 651f4489b484fbc45996ba0bf19ae2ef, type: 3}
   - {fileID: 21300000, guid: 186041e4b5cba214c8ffdc35fc60809e, type: 3}
   - {fileID: 21300000, guid: 9626e96b6573a6844bae030a99eb92ed, type: 3}
+  - {fileID: 21300000, guid: d3529661eb701ca43acee92ea451d573, type: 3}
   attackDie: {fileID: 308439044}
   healthDie: {fileID: 504805111}
 --- !u!114 &49548090
@@ -1212,11 +1213,11 @@ RectTransform:
   m_Father: {fileID: 49548093}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 20, y: 20}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -342.5, y: -242.5}
   m_SizeDelta: {x: 75, y: 75}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &309977688
 PrefabInstance:
   m_ObjectHideFlags: 0
