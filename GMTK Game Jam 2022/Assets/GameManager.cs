@@ -64,8 +64,8 @@ public class GameManager : MonoBehaviour
         {
             GM = this;
             DontDestroyOnLoad(gameObject);
-            curLevelIndex = 1;
-            path = "Level" + (curLevelIndex + 1);
+            //curLevelIndex = 1;
+            //path = "Level" + (curLevelIndex + 1);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             //PopulateBoard(path);
@@ -79,6 +79,51 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void PopulateBoard()
+    {
+        board = new int[width, height];
+        curEnemies = new List<EnemyBehavior>();
+        fireSprites = new List<GameObject>();
+        turnOrderIndex = -2;
+
+        string _loadPath = Application.dataPath + "/" + path + ".level";
+
+        BinaryFormatter _formatter = new BinaryFormatter();
+        FileStream _stream = new FileStream(_loadPath, FileMode.Open);
+
+        BoardSave _saveData = _formatter.Deserialize(_stream) as BoardSave;
+
+        _stream.Close();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                board[x, y] = _saveData.BoardStates[x][y];
+                if (_saveData.BoardStates[x][y] > 0)
+                {
+                    if (_saveData.BoardStates[x][y] == 69)
+                    {
+                        curPlayer = Instantiate(playerPrefab, new Vector3(x, 0, y), Quaternion.identity).GetComponent<PlayerBehavior>();
+                        curPlayer.Init(this, new Vector2Int(x, y));
+                    }
+
+                    else
+                    {
+                        EnemyBehavior _enemy = Instantiate(enemyPrefabs[_saveData.BoardStates[x][y] - 1], new Vector3(x, 0, y),
+                            Quaternion.identity).GetComponent<EnemyBehavior>();
+
+                        _enemy.Init(this, new Vector2Int(x, y));
+                        _enemy.gameObject.name = "enemy: " + curEnemies.Count;
+
+                        curEnemies.Add(_enemy);
+                    }
+                }
+
+            }
+        }
     }
 
     public void PopulateBoard(string _populateBoard)
@@ -474,14 +519,15 @@ public class GameManagerEditor : Editor
             (target as GameManager).BakeBoard();
         }
 
-        /*
+   
         if (GUILayout.Button("Load Map"))
         {
             (target as GameManager).PopulateBoard();
         }
-        */
+        
     }
 }
+
 
 [System.Serializable]
 public class BoardSave
