@@ -64,9 +64,9 @@ public class GameManager : MonoBehaviour
         {
             GM = this;
             DontDestroyOnLoad(gameObject);
-            //curLevelIndex = 1;
+            curLevelIndex = 1;
             //path = "Level" + (curLevelIndex + 1);
-
+            curLevelIndex = SceneManager.GetActiveScene().buildIndex;
             SceneManager.sceneLoaded += OnSceneLoaded;
             //PopulateBoard(path);
             //ProgressTurn();
@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
         fireSprites = new List<GameObject>();
         turnOrderIndex = -2;
 
+        
         string _loadPath = Application.dataPath + "/" + path + ".level";
 
         BinaryFormatter _formatter = new BinaryFormatter();
@@ -133,7 +134,7 @@ public class GameManager : MonoBehaviour
         fireSprites = new List<GameObject>();
         turnOrderIndex = -2;
 
-        string _loadPath = Application.dataPath + "/" + path + ".level";
+        string _loadPath = Application.persistentDataPath + "/" + path + ".level";
 
         BinaryFormatter _formatter = new BinaryFormatter();
         FileStream _stream = new FileStream(_loadPath, FileMode.Open);
@@ -336,6 +337,63 @@ public class GameManager : MonoBehaviour
         curEnemies.TrimExcess();
     }
 
+    public void InitializeBoard()
+    {
+        board = new int[width, height];
+        curEnemies = new List<EnemyBehavior>();
+        fireSprites = new List<GameObject>();
+        turnOrderIndex = -2;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                RaycastHit _hit;
+                if (Physics.Raycast(new Vector3(x, 100, y), Vector3.down, out _hit))
+                {
+                    switch (_hit.transform.tag)
+                    {
+                        case "Player":
+                            board[x,y] = 69;
+                            //Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.blue, 10);
+                            curPlayer = _hit.transform.gameObject.GetComponent<PlayerBehavior>();
+                            curPlayer.Init(this, new Vector2Int(x, y));
+                            //DestroyImmediate(_hit.transform.gameObject);
+                            break;
+
+                        case "Enemy":
+                            board[x, y] = _hit.transform.GetComponent<EnemyBehavior>().SpawnIndex + 1;
+
+                            EnemyBehavior _enemy = _hit.transform.GetComponent<EnemyBehavior>();
+
+                            _enemy.Init(this, new Vector2Int(x, y));
+                            _enemy.gameObject.name = "enemy: " + curEnemies.Count;
+
+                            curEnemies.Add(_enemy);
+                            break;
+
+                        case "Immoveable":
+                            board[x, y] = -1;
+                            //Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.black, 10);
+                            break;
+
+                        default:
+                            //Debug.Log("called");
+                            //Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.white, 10);
+                            board[x, y] = 0;
+                            break;
+                    }
+                }
+
+                else
+                {
+                    //Debug.DrawRay(new Vector3(x, 100, y), Vector3.down * 101f, Color.black, 10);
+                    board[x, y] = -1;
+                }
+            }
+        }
+    }
+
     public void BakeBoard()
     {
         int[][] _boardStates = new int[width][];
@@ -344,8 +402,6 @@ public class GameManager : MonoBehaviour
             _boardStates[x] = new int[height];
             for (int y = 0; y < height; y++)
             {
-
-
                 RaycastHit _hit;
                 if (Physics.Raycast(new Vector3(x, 100, y), Vector3.down, out _hit))
                 {
@@ -384,7 +440,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        string _savePath = Application.dataPath + "/" + path + ".level";
+        string _savePath = Application.persistentDataPath + "/" + path + ".level";
         BinaryFormatter _fromatter = new BinaryFormatter();
         FileMode _fileMode = FileMode.Create;
 
@@ -492,8 +548,10 @@ public class GameManager : MonoBehaviour
     {
         transitionScreen.SetActive(true);
         path = "Level" + (curLevelIndex + 1);
-        
-        SceneManager.LoadScene("Level" + (curLevelIndex + 1), LoadSceneMode.Single);
+
+        //curLevelIndex++;
+        SceneManager.LoadScene(curLevelIndex, LoadSceneMode.Single);
+
 
         yield return new WaitForSeconds(1);
 
@@ -502,12 +560,20 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        PopulateBoard(path);
-        ProgressTurn();
+        if (scene.buildIndex != 7)
+        {
+            InitializeBoard();
+            ProgressTurn();
+        }
+        else
+        {
+            curLevelIndex = 1;
+        }
     }
     //on
 }
 
+/*
 [CustomEditor(typeof(GameManager))]
 public class GameManagerEditor : Editor
 {
@@ -527,7 +593,7 @@ public class GameManagerEditor : Editor
         
     }
 }
-
+*/
 
 [System.Serializable]
 public class BoardSave
