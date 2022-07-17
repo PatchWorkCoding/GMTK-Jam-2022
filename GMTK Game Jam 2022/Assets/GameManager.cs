@@ -396,7 +396,7 @@ public class GameManager : MonoBehaviour
         if (curEnemies.Count <= 0)
         {
             curLevelIndex++;
-            LoadNextLevel();
+            StartCoroutine(LoadNextLevel());
         }
     }
 
@@ -445,13 +445,14 @@ public class GameManager : MonoBehaviour
 
     IEnumerator LoadNextLevel()
     {
-        //print("called");
         transitionScreen.SetActive(true);
-        yield return new WaitForSeconds(1);
-        transitionScreen.SetActive(false);
-
         path = "Level" + (curLevelIndex + 1);
+        
         SceneManager.LoadScene("Level" + (curLevelIndex + 1), LoadSceneMode.Single);
+
+        yield return new WaitForSeconds(1);
+
+        transitionScreen.SetActive(false);
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
