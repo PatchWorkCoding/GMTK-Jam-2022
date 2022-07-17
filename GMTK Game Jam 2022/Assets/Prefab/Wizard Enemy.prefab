@@ -72,12 +72,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 20a4f970cd42ef0448f5624325fe90c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 12c796396d3d66b41918a8d122f1667f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 2.56}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -135,10 +135,10 @@ MonoBehaviour:
   maxMoves: 1
   spawnIndex: 3
   spriteRenderer: {fileID: 7190544720876892745}
-  defaultSprite: {fileID: 21300000, guid: 20a4f970cd42ef0448f5624325fe90c9, type: 3}
-  Walk1: {fileID: 21300000, guid: a690175bdd3ef434fbf045eede9dff16, type: 3}
-  Walk2: {fileID: 21300000, guid: a084f904a499c2b4c8d97f18affa6580, type: 3}
-  attackSprite: {fileID: 21300000, guid: a8bfaabd3a7e41143961eaf3ab77f796, type: 3}
+  defaultSprite: {fileID: 21300000, guid: 12c796396d3d66b41918a8d122f1667f, type: 3}
+  Walk1: {fileID: 21300000, guid: 8461690fb69f0af49b5c4b157d8b34cc, type: 3}
+  Walk2: {fileID: 21300000, guid: 8461690fb69f0af49b5c4b157d8b34cc, type: 3}
+  attackSprite: {fileID: 21300000, guid: be6896d6bbac2d9469072746df0e3c31, type: 3}
   movesBetweenAttacks: 3
 --- !u!65 &6035371845110433768
 BoxCollider:

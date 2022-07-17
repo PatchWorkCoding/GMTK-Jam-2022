@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class KnightBehavior : EnemyBehavior
 {
-    [Header("Sprite Properties")]
-    [SerializeField]
-    SpriteRenderer spriteRenderer = null;
-    [SerializeField]
-    Sprite defaultSprite, Walk1, Walk2, attackSprite;
 
     protected override IEnumerator RunBehaviorTree()
     {
@@ -17,36 +12,7 @@ public class KnightBehavior : EnemyBehavior
             if (Vector2Int.Distance(target, index) > 1)
             {
                 print("called");
-                if (target.x != index.x)
-                {
-                    if (target.x > index.x)
-                    {
-                        StartCoroutine(Move(new Vector2Int(1, 0)));
-                        spriteRenderer.transform.localScale = new Vector3 (1,1,1);
-                        yield return new WaitForSeconds(0.5f);
-                    }
-                    else
-                    {
-                        StartCoroutine(Move(new Vector2Int(-1, 0)));
-                        spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
-                        yield return new WaitForSeconds(0.5f);
-                    }
-                }
-                else if (target.y != index.y)
-                {
-                    if (target.y > index.y)
-                    {
-                        StartCoroutine(Move(new Vector2Int(0, 1)));
-                        spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
-                        yield return new WaitForSeconds(0.5f);
-                    }
-                    else
-                    {
-                        StartCoroutine(Move(new Vector2Int(0, -1)));
-                        spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
-                        yield return new WaitForSeconds(0.5f);
-                    }
-                }
+                StartCoroutine(Move());
             }
 
             else
@@ -63,26 +29,52 @@ public class KnightBehavior : EnemyBehavior
         TurnOver();
     }
 
-    IEnumerator Move(Vector2Int _moveDir)
+    protected override Vector2Int[] GeneratePossibleDirections()
     {
-        if (GM.Move(index, _moveDir))
+        List<Vector2Int> _dirs = new List<Vector2Int>();
+        if (target.x != index.x)
         {
-            Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = Walk1;
-            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = Walk2;
-            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = defaultSprite;
-            transform.position = _finalPos;
-
-            index += _moveDir;
+            if (target.x > index.x)
+            {
+                _dirs.Add(new Vector2Int(1, 0));
+                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+            else
+            {
+                _dirs.Add(new Vector2Int(-1, 0));
+                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
         }
+        else if (target.y != index.y)
+        {
+            if (target.y > index.y)
+            {
+                _dirs.Add(new Vector2Int(0, 1));
+                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else
+            {
+                _dirs.Add(new Vector2Int(0, -1));
+                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
+
+        if (_dirs[0].y != 0)
+        {
+            _dirs.Add(new Vector2Int(1, 0));
+            _dirs.Add(new Vector2Int(-1, 0));
+            _dirs.Add(new Vector2Int(0, -_dirs[0].y));
+        }
+
+        else if (_dirs[0].x != 0)
+        {
+            _dirs.Add(new Vector2Int(0, 1));
+            _dirs.Add(new Vector2Int(0, -1));
+            _dirs.Add(new Vector2Int(-_dirs[0].x, 0));
+        }
+
+        return _dirs.ToArray();
+        //return base.GeneratePossibleDirections();
     }
 
     IEnumerator Attack()

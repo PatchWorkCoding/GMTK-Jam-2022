@@ -22,6 +22,13 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField]
     int spawnIndex = 0;
 
+    [Header("Sprite Properties")]
+    [SerializeField]
+    protected SpriteRenderer spriteRenderer = null;
+    [SerializeField]
+    protected Sprite defaultSprite, Walk1, Walk2, attackSprite;
+
+
     protected int curMoves = 0;
 
     protected Vector2Int index = Vector2Int.zero;
@@ -53,6 +60,39 @@ public class EnemyBehavior : MonoBehaviour
         TurnOver();
     }
 
+
+    protected virtual Vector2Int[] GeneratePossibleDirections()
+    {
+        return null;
+    }
+
+    protected IEnumerator Move()
+    {
+        Vector2Int[] _dirs = GeneratePossibleDirections();
+        for (int i = 0; i < _dirs.Length; i++)
+        {
+            if (GM.Move(index, _dirs[i]))
+            {
+                Vector3 _finalPos = transform.position + new Vector3(_dirs[i].x, 0, _dirs[i].y);
+
+                yield return new WaitForSeconds(0.1f);
+                spriteRenderer.sprite = Walk1;
+                transform.position = transform.position + (new Vector3(_dirs[i].x, 0, _dirs[i].y).normalized * 0.3f);
+
+                yield return new WaitForSeconds(0.1f);
+                spriteRenderer.sprite = Walk2;
+                transform.position = transform.position + (new Vector3(_dirs[i].x, 0, _dirs[i].y).normalized * 0.3f);
+
+                yield return new WaitForSeconds(0.1f);
+                spriteRenderer.sprite = defaultSprite;
+                transform.position = _finalPos;
+
+                yield return new WaitForSeconds(0.1f);
+                index += _dirs[i];
+                break;
+            }
+        }
+    }
 
     protected virtual void FindTarget()
     {

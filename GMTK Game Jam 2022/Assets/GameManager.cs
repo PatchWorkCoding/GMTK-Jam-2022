@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         PopulateBoard();
         ProgressTurn();
     }
@@ -185,6 +186,14 @@ public class GameManager : MonoBehaviour
                     SetBoardCellState(_index, 15);
                 }
             }
+        }
+    }
+
+    public void BestowCurse(Vector2Int _index)
+    {
+        if (Player.Index == _index)
+        {
+            Player.Curse();
         }
     }
 

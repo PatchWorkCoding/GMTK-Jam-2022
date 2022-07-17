@@ -16,6 +16,9 @@ public class PlayerBehavior : MonoBehaviour
     int health = 6;
     [SerializeField]
     UIManager uiManager;
+    [SerializeField]
+    Texture2D[] dieFaceTextures = null;
+
     [Header("Sprite Properties")]
     [SerializeField]
     SpriteRenderer spriteRenderer = null;
@@ -29,6 +32,9 @@ public class PlayerBehavior : MonoBehaviour
     Vector2Int index = Vector2Int.zero;
     
     int moveCount = 0;
+    int turnsWithCurse = 0;
+
+    int[] cursedFaces = null;
 
     bool canAct = false;
 
@@ -44,6 +50,8 @@ public class PlayerBehavior : MonoBehaviour
         canAct = false;
 
         roller = Instantiate(dieTablePrefab).GetComponent<DieRoller>();
+
+        cursedFaces = new int[6];
     }
 
     // Update is called once per frame
@@ -132,12 +140,7 @@ public class PlayerBehavior : MonoBehaviour
 
         if (moveCount >= movesPerTurn)
         {
-            canAct = false;
-            if (curArrowParent != null)
-            {
-                Destroy(curArrowParent);
-            }
-            GM.ProgressTurn();
+            EndTurn();
         }
         else
         {
@@ -147,70 +150,91 @@ public class PlayerBehavior : MonoBehaviour
 
     public IEnumerator Move(Vector2Int _moveDir)
     {
-        if (GM.Move(index, _moveDir))
+        Vector3 _rollRot = Vector3.zero;
+        if (_moveDir == new Vector2Int(0, 1))
         {
-            if (curArrowParent != null)
+            _rollRot = (new Vector3(90, 0, 0));
+            spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else if (_moveDir == new Vector2Int(0, -1))
+        {
+            _rollRot = (new Vector3(-90, 0, 0));
+            spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (_moveDir == new Vector2Int(-1, 0))
+        {
+            _rollRot = (new Vector3(0, 0, 90));
+            spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else if (_moveDir == new Vector2Int(1, 0))
+        {
+            _rollRot = (new Vector3(0, 0, -90));
+            spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
+        }
+
+        roller.RollDie(_rollRot);
+
+        if (cursedFaces[roller.DieFace() - 1] <= 0)
+        {
+            if (GM.Move(index, _moveDir))
             {
-                Destroy(curArrowParent);
-            }
-
-            Vector3 _rollRot = Vector3.zero;
-            if (_moveDir == new Vector2Int(0,1))
-            {
-                _rollRot = (new Vector3(90, 0, 0));
-                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if (_moveDir == new Vector2Int(0, -1))
-            {
-                _rollRot = (new Vector3(-90, 0, 0));
-                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
-            }
-            else if (_moveDir == new Vector2Int(-1, 0))
-            {
-                _rollRot = (new Vector3(0, 0, 90));
-                spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if(_moveDir == new Vector2Int(1,0))
-            {
-                _rollRot = (new Vector3(0, 0, -90));
-                spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
-            }
-
-            roller.RollDie(_rollRot);
-
-            Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = Walk1;
-            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = Walk2;
-            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = defaultSprite;
-            transform.position = _finalPos;
-
-            index += _moveDir;
-            uiManager.UpdateMoveDie(roller.DieFace() - 1);
-
-            if (canAct)
-            {
-                if (moveCount >= movesPerTurn)
+                if (curArrowParent != null)
                 {
-                    canAct = false;
-                    if (curArrowParent != null)
-                    {
-                        Destroy(curArrowParent);
-                    }
-                    GM.ProgressTurn();
+                    Destroy(curArrowParent);
                 }
-                else
+
+                Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
+                yield return new WaitForSeconds(0.1f);
+                spriteRenderer.sprite = Walk1;
+                transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
+
+                yield return new WaitForSeconds(0.1f);
+                spriteRenderer.sprite = Walk2;
+                transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
+
+                yield return new WaitForSeconds(0.1f);
+                spriteRenderer.sprite = defaultSprite;
+                transform.position = _finalPos;
+
+                index += _moveDir;
+                uiManager.UpdateMoveDie(roller.DieFace() - 1);
+
+                if (canAct)
                 {
-                    LayoutMoveArrows();
+                    if (moveCount >= movesPerTurn)
+                    {
+                        EndTurn();
+                    }
+                    else
+                    {
+                        LayoutMoveArrows();
+                    }
                 }
             }
         }
+        else
+        {
+            roller.RollDie(-_rollRot);
+        }
+        
+    }
+
+    void EndTurn()
+    {
+        for (int i = 0; i < cursedFaces.Length; i++)
+        {
+            if (cursedFaces[i] > 0)
+            {
+                cursedFaces[i]--;
+            }
+        }
+
+        canAct = false;
+        if (curArrowParent != null)
+        {
+            Destroy(curArrowParent);
+        }
+        GM.ProgressTurn();
     }
 
     public void TakeDamage(int _damage)
@@ -218,13 +242,18 @@ public class PlayerBehavior : MonoBehaviour
         health -= _damage;
         uiManager.UpdateHealth(Mathf.Clamp(health - 1, 0, 5));
 
-        if (health == 0)
+        if (health <= 0)
         {
             GM.ResetGame();
             Destroy(roller.gameObject);
             Destroy(gameObject);
             //Debug.Log("Dead");
         }
+    }
+
+    public void Curse()
+    {
+        cursedFaces[roller.DieFace() - 1] = 2;
     }
 
     public void LayoutMoveArrows()
@@ -242,8 +271,28 @@ public class PlayerBehavior : MonoBehaviour
 
         string[] _names = new string[] { "w", "s", "d", "a" };
 
+        Vector3 _rollRot = Vector3.zero;
         for (int i = 0; i < _dirs.Length; i++)
         {
+            if (_dirs[i] == new Vector2Int(0, 1))
+            {
+                _rollRot = (new Vector3(90, 0, 0));
+            }
+            else if (_dirs[i] == new Vector2Int(0, -1))
+            {
+                _rollRot = (new Vector3(-90, 0, 0));
+            }
+            else if (_dirs[i] == new Vector2Int(-1, 0))
+            {
+                _rollRot = (new Vector3(0, 0, 90));
+            }
+            else if (_dirs[i] == new Vector2Int(1, 0))
+            {
+                _rollRot = (new Vector3(0, 0, -90));
+            }
+
+            roller.RollDie(_rollRot);
+
             int _curCellState = GM.GetBoardCellState(index + _dirs[i]);
             if (_curCellState == 0)
             {
@@ -252,6 +301,15 @@ public class PlayerBehavior : MonoBehaviour
                 _curArrow.name = _names[i] + "m";
 
                 _curArrow.transform.parent = curArrowParent.transform;
+
+                if (cursedFaces[roller.DieFace() - 1] <= 0)
+                {
+                    _curArrow.transform.GetChild(0).GetComponent<MeshRenderer>().material.mainTexture = dieFaceTextures[roller.DieFace() - 1];
+                }
+                else
+                {
+                    _curArrow.name = "no";
+                }
             }
             else if(_curCellState > 0 && _curCellState < 99)
             {
@@ -261,6 +319,8 @@ public class PlayerBehavior : MonoBehaviour
 
                 _curArrow.transform.parent = curArrowParent.transform;
             }
+
+            roller.RollDie(-_rollRot);
         }
         
     }

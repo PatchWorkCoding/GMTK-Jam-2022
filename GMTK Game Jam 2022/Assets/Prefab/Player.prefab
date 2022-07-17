@@ -138,6 +138,13 @@ MonoBehaviour:
   movesPerTurn: 2
   health: 6
   uiManager: {fileID: 0}
+  dieFaceTextures:
+  - {fileID: 2800000, guid: fe1e0b484e4105f44a73e4e3957b3cea, type: 3}
+  - {fileID: 2800000, guid: ed02116e2dcfb5a4bbad05646717aa4c, type: 3}
+  - {fileID: 2800000, guid: bdf7479b093237f42b15afe8c1958acc, type: 3}
+  - {fileID: 2800000, guid: f20db6c6e7d4a5145af0ea76d2b23ab6, type: 3}
+  - {fileID: 2800000, guid: 292af5552108d1e41a8753c34c5fd9e3, type: 3}
+  - {fileID: 2800000, guid: 61f7829b15219d94ab34ca20ad2007ac, type: 3}
   spriteRenderer: {fileID: 346414540584321497}
   defaultSprite: {fileID: 21300000, guid: ab192fbba403d2d40b5d62eaebe18641, type: 3}
   Walk1: {fileID: 21300000, guid: 5a2dbb621cce1ab4b98317fc98c07302, type: 3}

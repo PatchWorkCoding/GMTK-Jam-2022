@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class WizardBehavior : EnemyBehavior
 {
-    [Header("Sprite Properties")]
-    [SerializeField]
-    SpriteRenderer spriteRenderer = null;
-    [SerializeField]
-    Sprite defaultSprite, Walk1, Walk2, attackSprite;
     [SerializeField]
     int movesBetweenAttacks = 0;
 
@@ -18,7 +13,7 @@ public class WizardBehavior : EnemyBehavior
     {
         while (curMoves < maxMoves)
         {
-            if (movesSinceLastAttack > movesBetweenAttacks)
+            if (isWithinRange())
             {
                 StartCoroutine(Attack());
                 movesSinceLastAttack = 0;
@@ -27,75 +22,50 @@ public class WizardBehavior : EnemyBehavior
             }
             else
             {
-                Vector2Int _dir = Vector2Int.zero;
-                if (target.x != index.x)
-                {
-                    if (target.x > index.x)
-                    {
-                        _dir += new Vector2Int(1, 0);
-                        spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
-                    }
-                    else
-                    {
-                        _dir += new Vector2Int(-1, 0);
-                        spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
-                    }
-                }
-
-                if (target.y != index.y)
-                {
-                    if (target.y > index.y)
-                    {
-                        _dir += new Vector2Int(0, 1);
-                        spriteRenderer.transform.localScale = new Vector3(-1, 1, 1);
-                    }
-                    else
-                    {
-                        _dir += new Vector2Int(0, -1);
-                        spriteRenderer.transform.localScale = new Vector3(1, 1, 1);
-                        
-                    }
-                }
-
-                StartCoroutine(Move(_dir));
+                StartCoroutine(Move());
                 yield return new WaitForSeconds(0.5f);
             }
-            movesSinceLastAttack++;
+            
             curMoves++;
         }
-
 
         TurnOver();
     }
 
-    IEnumerator Move(Vector2Int _moveDir)
+    protected override Vector2Int[] GeneratePossibleDirections()
     {
-        if (GM.Move(index, _moveDir))
+        List<Vector2Int> _returnDirs = new List<Vector2Int>();
+        
+        int _x = CollapseToOne(target.x, index.x);
+        int _y = CollapseToOne(target.y, index.y);
+
+        Vector2Int _prefferedDir = new Vector2Int(_x == 0 ? RandomNegativeOne() : _x, _y == 0 ? RandomNegativeOne() : _y);
+        if (movesSinceLastAttack < movesBetweenAttacks)
         {
-            Vector3 _finalPos = transform.position + new Vector3(_moveDir.x, 0, _moveDir.y);
-
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = Walk1;
-            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = Walk2;
-            transform.position = transform.position + (new Vector3(_moveDir.x, 0, _moveDir.y).normalized * 0.3f);
-
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.sprite = defaultSprite;
-            transform.position = _finalPos;
-
-            yield return new WaitForSeconds(0.1f);
-            index += _moveDir;
+            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, -_prefferedDir.y));
+            _returnDirs.Add(new Vector2Int(_prefferedDir.x, -_prefferedDir.y));
+            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, _prefferedDir.y));
+            _returnDirs.Add(_prefferedDir);
         }
+
+        else
+        {
+            _returnDirs.Add(_prefferedDir);
+            _returnDirs.Add(new Vector2Int(_prefferedDir.x, -_prefferedDir.y));
+            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, _prefferedDir.y));
+            _returnDirs.Add(new Vector2Int(-_prefferedDir.x, -_prefferedDir.y));
+        }
+
+        movesSinceLastAttack++;
+        return _returnDirs.ToArray();
+        //return base.GeneratePossibleDirections();
     }
 
     IEnumerator Attack()
     {
-        print("did an attack");
-        GM.SpellAttack(index + new Vector2Int(CollapseToOne(target.x, index.x), CollapseToOne(target.y, index.y)), new Vector2Int(3,3), attack);
+        //print("did an attack");
+        GM.BestowCurse(target);
+        //GM.SpellAttack(index + new Vector2Int(CollapseToOne(target.x, index.x), CollapseToOne(target.y, index.y)), new Vector2Int(3,3), attack);
         yield return new WaitForSeconds(0.1f);
     }
 
@@ -117,5 +87,23 @@ public class WizardBehavior : EnemyBehavior
         {
             return 0;
         }
+    }
+
+    int RandomNegativeOne()
+    {
+        int _rnd = Random.Range(0, 2);
+        if (_rnd == 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    bool isWithinRange()
+    {
+        return (index.x - 1 == target.x || index.x + 1 == target.x) && (index.y - 1 == target.y || index.y + 1 == target.y);
     }
 }
