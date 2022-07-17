@@ -130,6 +130,8 @@ public class EnemyBehavior : MonoBehaviour
             {
                 Die();
             }
+
+            print("health: " + health + " - name: " + name);
         }
     }
 

@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
                             Quaternion.identity).GetComponent<EnemyBehavior>();
 
                         _enemy.Init(this, new Vector2Int(x, y));
+                        _enemy.gameObject.name = "enemy: " + curEnemies.Count;
 
                         curEnemies.Add(_enemy);
                     }
@@ -143,7 +144,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < _length; i++)
         {
             _curIndex += _dir;
-            if (GetBoardCellState(_curIndex) != 99)
+            if (GetBoardCellState(_curIndex) != 99 && GetBoardCellState(_curIndex) != -1)
             {
                 if (curPlayer.Index == _curIndex)
                 {
@@ -153,16 +154,21 @@ public class GameManager : MonoBehaviour
 
                 else
                 {
+                    bool _foundEnemy = false;
                     for (int n = 0; n < curEnemies.Count; n++)
                     {
                         if (curEnemies[n].Index == _curIndex)
                         {
                             int _state = curEnemies[n].Health - _damage;
                             curEnemies[n].Health -= _damage;
-
+                            _foundEnemy = true;
                             SetBoardCellState(_index, Mathf.Clamp(_state, 0, 100));
                             break;
                         }
+                    }
+                    if (_foundEnemy)
+                    {
+                        break;
                     }
                 }
             }
